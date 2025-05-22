@@ -1,10 +1,5 @@
 const path = require('path')
-import express, {
-  NextFunction,
-  Request,
-  RequestHandler,
-  Response,
-} from 'express'
+import express, { NextFunction, RequestHandler, Response } from 'express'
 
 import User from '../models/userModel'
 import APIfeatures from '../utils/APIFeatures'
@@ -12,24 +7,24 @@ import AppError from '../utils/appError'
 import Post from './../models/postModel'
 import asyncWrapper from './../utils/asyncWrapper'
 
+import { AuthenticatedRequest } from './../utils/asyncWrapper'
+
 const app = express()
 // Define the custom request type
-export interface AuthenticatedRequest extends Request {
-  user?: any
-  file?: Express.Multer.File
-}
 
 export const addPost = asyncWrapper(
   async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     // console.log("Request body:", req.body);
     // console.log("Files:", req.files);
 
-    const files = req.files as {
-      image?: Express.Multer.File[]
-      video?: Express.Multer.File[]
-    }
+    const files = req.files as
+      | {
+          image?: Express.Multer.File[]
+          video?: Express.Multer.File[]
+        }
+      | undefined
 
-    if (files.image && files.image.length > 0) {
+    if (files?.image && files.image.length > 0) {
       const imagePath = files.image[0].path.replace(
         path.join(__dirname, '../../public'),
         ''
@@ -37,7 +32,7 @@ export const addPost = asyncWrapper(
       req.body.imagePath = imagePath
     }
 
-    if (files.video && files.video.length > 0) {
+    if (files?.video && files.video.length > 0) {
       const videoPath = files.video[0].path.replace(
         path.join(__dirname, '../../public'),
         ''
