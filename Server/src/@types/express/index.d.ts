@@ -1,14 +1,11 @@
-import { Request } from 'express'
+// Import the original Express types
+import 'express'
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: any
-      file?: any
-      files?: {
-        image?: any[]
-        video?: any[]
-      }
-    }
+// Declare module augmentation
+declare module 'express' {
+  interface Request {
+    user?: any
+    file?: any
+    files?: any
   }
 }
