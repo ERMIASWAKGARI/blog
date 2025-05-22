@@ -1,18 +1,9 @@
 import { NextFunction, Request, Response } from 'express'
-// Use Express.Multer.File for file typings
 
 export interface AuthenticatedRequest extends Request {
   user?: any
-  file?: Express.Multer.File // Use Express.Multer.File directly
-  files?:
-    | {
-        [key: string]: Express.Multer.File[] // Use Express.Multer.File here
-      }
-    | Express.Multer.File[] // And here
-    | {
-        image?: Express.Multer.File[] // And here
-        video?: Express.Multer.File[] // And here
-      }
+  file?: any // Using any for file
+  files?: any // Using any for files
 }
 
 type AsyncHandler = (
