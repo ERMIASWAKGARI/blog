@@ -1,9 +1,8 @@
-import { NextFunction, Request, Response } from "express";
-import User from "./../../../models/userModel";
-import Post from "../../../models/postModel";
-import AppError from "./../../../utils/appError";
-import asyncWrapper from "../../../utils/asyncWrapper";
-import { AuthenticatedRequest } from "./../../authController";
+import { NextFunction, Response } from 'express'
+import Post from '../../../models/postModel'
+import asyncWrapper, { AuthenticatedRequest } from '../../../utils/asyncWrapper'
+import User from './../../../models/userModel'
+import AppError from './../../../utils/appError'
 
 // Handler for changing email
 export const changeEmail = asyncWrapper(
@@ -15,20 +14,20 @@ export const changeEmail = asyncWrapper(
         new: true,
         runValidators: true,
       }
-    );
+    )
 
     if (!user) {
-      return next(new AppError("No user found with that ID", 404));
+      return next(new AppError('No user found with that ID', 404))
     }
 
     res.status(200).json({
-      status: "success",
+      status: 'success',
       data: {
         user,
       },
-    });
+    })
   }
-);
+)
 
 // Handler for changing name
 export const changeName = asyncWrapper(
@@ -40,45 +39,45 @@ export const changeName = asyncWrapper(
         new: true,
         runValidators: true,
       }
-    );
+    )
 
     if (!user) {
-      return next(new AppError("No user found with that ID", 404));
+      return next(new AppError('No user found with that ID', 404))
     }
 
     // Update the user's name in all their posts
     await Post.updateMany(
       { user: req.user.id },
       { $set: { author: req.body.name } }
-    );
+    )
 
     res.status(200).json({
-      status: "success",
+      status: 'success',
       data: {
         user,
       },
-    });
+    })
   }
-);
+)
 
 export const deleteUserAccount = asyncWrapper(
   async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    const userId = req.user._id;
+    const userId = req.user._id
 
     // Delete the user
-    const user = await User.findByIdAndDelete(userId);
+    const user = await User.findByIdAndDelete(userId)
     if (!user) {
-      return next(new AppError("User not found", 404));
+      return next(new AppError('User not found', 404))
     }
 
     // Delete the user's posts
-    await Post.deleteMany({ user: userId });
+    await Post.deleteMany({ user: userId })
 
     res
       .status(200)
-      .json({ message: "Account and associated posts deleted successfully" });
+      .json({ message: 'Account and associated posts deleted successfully' })
   }
-);
+)
 
 // // Handler for changing photo
 // export const changePhoto = asyncWrapper(
