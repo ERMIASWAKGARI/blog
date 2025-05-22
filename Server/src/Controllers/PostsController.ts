@@ -19,8 +19,8 @@ export const addPost = asyncWrapper(
 
     const files = req.files as
       | {
-          image?: Express.Multer.File[]
-          video?: Express.Multer.File[]
+          image?: any
+          video?: any
         }
       | undefined
 
@@ -71,8 +71,8 @@ export const updatePost = asyncWrapper(
     }
 
     const files = req.files as {
-      image?: Express.Multer.File[]
-      video?: Express.Multer.File[]
+      image?: any
+      video?: any
     }
 
     if (files.image && files.image.length > 0) {
