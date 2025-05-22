@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { NextFunction, Request, Response } from 'express'
+import { NextFunction, Response } from 'express'
 import fs from 'fs'
 import jwt from 'jsonwebtoken'
 import multer from 'multer'
@@ -10,9 +10,7 @@ import AppError from './../utils/appError'
 import asyncWrapper from './../utils/asyncWrapper'
 import sendEmail from './../utils/email'
 
-export interface AuthenticatedRequest extends Request {
-  user?: any
-}
+import { AuthenticatedRequest } from './../utils/asyncWrapper'
 
 const signToken = (id: string): string => {
   return jwt.sign({ id }, process.env.JWT_SECRET as string, {
