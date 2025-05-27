@@ -1,30 +1,9 @@
-import bcryptjs from 'bcryptjs'
-import crypto from 'crypto'
-import mongoose, { Document, Model } from 'mongoose'
-import validator from 'validator'
+const bcryptjs = require('bcryptjs')
+const crypto = require('crypto')
+const mongoose = require('mongoose')
+const validator = require('validator')
 
-interface IUser extends Document {
-  name: string
-  email: string
-  photo?: string
-  numberOfPost: number
-  role: 'user' | 'admin'
-  gender?: 'male' | 'female'
-  password: string
-  passwordConfirm?: string
-  passwordChangedAt?: Date
-  passwordResetToken?: string
-  passwordResetExpires?: Date
-  correctPassword(
-    candidatePassword: string,
-    userPassword: string
-  ): Promise<boolean>
-  changePasswordAfter(JWTTimestamp: number): boolean
-  createPasswordResetToken(): string
-  createdAt: Date
-}
-
-const userSchema = new mongoose.Schema<IUser>(
+const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -62,7 +41,7 @@ const userSchema = new mongoose.Schema<IUser>(
       type: String,
       required: [true, 'Please confirm your password'],
       validate: {
-        validator: function (this: IUser, el: string): boolean {
+        validator: function (el) {
           return el === this.password
         },
         message: 'Passwords are not the same!',
@@ -90,7 +69,7 @@ userSchema.virtual('posts', {
 })
 
 // Middleware to hash the password before saving
-userSchema.pre<IUser>('save', async function (next) {
+userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next()
 
   this.password = await bcryptjs.hash(this.password, 12)
@@ -99,7 +78,7 @@ userSchema.pre<IUser>('save', async function (next) {
 })
 
 // Middleware to set passwordChangedAt timestamp
-userSchema.pre<IUser>('save', function (next) {
+userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next()
 
   this.passwordChangedAt = new Date(Date.now() - 1000)
@@ -108,16 +87,14 @@ userSchema.pre<IUser>('save', function (next) {
 
 // Instance method to compare passwords
 userSchema.methods.correctPassword = async function (
-  candidatePassword: string,
-  userPassword: string
-): Promise<boolean> {
+  candidatePassword,
+  userPassword
+) {
   return await bcryptjs.compare(candidatePassword, userPassword)
 }
 
 // Instance method to check if password was changed after JWT creation
-userSchema.methods.changePasswordAfter = function (
-  JWTTimestamp: number
-): boolean {
+userSchema.methods.changePasswordAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(
       (this.passwordChangedAt.getTime() / 1000).toString(),
@@ -129,7 +106,7 @@ userSchema.methods.changePasswordAfter = function (
 }
 
 // Instance method to create a password reset token
-userSchema.methods.createPasswordResetToken = function (): string {
+userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString('hex')
   this.passwordResetToken = crypto
     .createHash('sha256')
@@ -140,6 +117,6 @@ userSchema.methods.createPasswordResetToken = function (): string {
 }
 
 // Create User model
-const User: Model<IUser> = mongoose.model<IUser>('User', userSchema)
+const User = mongoose.model('User', userSchema)
 
-export default User
+module.exports = User

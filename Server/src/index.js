@@ -1,19 +1,15 @@
-import express, { NextFunction, Request, Response } from 'express'
+const express = require('express')
 const path = require('path')
 
-import adminRoutes from './routes/adminRoutes'
-import postRoute from './routes/postRoutes'
-import ratingRoute from './routes/ratingRoute'
-import userRoutes from './routes/userRoutes'
+const adminRoutes = require('./routes/adminRoutes')
+const postRoute = require('./routes/postRoutes')
+const ratingRoute = require('./routes/ratingRoute')
+const userRoutes = require('./routes/userRoutes')
 
-import cors from 'cors'
-import { connectDB } from './connectDb'
-import globalErrorHandler from './Controllers/errorController'
-import AppError from './utils/appError'
-
-export interface AuthenticatedRequest extends Request {
-  user?: any
-}
+const cors = require('cors')
+const { connectDB } = require('./connectDb')
+const globalErrorHandler = require('./Controllers/errorController')
+const AppError = require('./utils/appError')
 
 const app = express()
 connectDB()
@@ -21,7 +17,11 @@ connectDB()
 app.use(express.json())
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: [
+      'http://localhost:4173',
+      'http://localhost:5173',
+      'https://blog-peach-three-24.vercel.app',
+    ],
     credentials: true,
   })
 )
@@ -36,7 +36,7 @@ app.use('/api/v1/rating', ratingRoute)
 app.use('/api/v1/admin', adminRoutes)
 
 // Handling unhandled routes
-app.all('*', (req: Request, res: Response, next: NextFunction) => {
+app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404))
 })
 

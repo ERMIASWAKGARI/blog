@@ -1,9 +1,9 @@
-import dotenv from 'dotenv'
-import mongoose from 'mongoose'
+const dotenv = require('dotenv')
+const mongoose = require('mongoose')
 
 dotenv.config()
 
-export const connectDB = async (): Promise<void> => {
+const connectDB = async () => {
   try {
     const connectionString = process.env.CONNECTION_STRING
 
@@ -16,8 +16,10 @@ export const connectDB = async (): Promise<void> => {
     await mongoose.connect(connectionString)
 
     console.log('DB connected successfully')
-  } catch (error: any) {
+  } catch (error) {
     console.error(`Error: ${error.message}`)
     process.exit(1)
   }
 }
+
+module.exports = { connectDB }
