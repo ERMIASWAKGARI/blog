@@ -18,7 +18,7 @@ app.use(express.json())
 app.use(
   cors({
     origin: [
-      'http://localhost:4173',
+      'http://localhost:5000',
       'http://localhost:5173',
       'https://blog-peach-three-24.vercel.app',
     ],
