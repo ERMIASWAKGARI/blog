@@ -95,7 +95,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const mediaItems = [
     {
       type: 'image',
-      url: `${BASE_URL}/public${normalizePath(post.imagePath)}`,
+      url: `${BASE_URL}${normalizePath(post.imagePath)}`,
     },
     {
       type: 'video',
