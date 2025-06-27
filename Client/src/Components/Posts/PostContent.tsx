@@ -1,30 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { FaEdit, FaTrash } from "react-icons/fa";
-import { BsStarFill, BsStarHalf, BsStar } from "react-icons/bs";
-import { BASE_URL } from "../../config";
+import React from 'react'
+import { Carousel } from 'react-responsive-carousel'
+import 'react-responsive-carousel/lib/styles/carousel.min.css'
+import { FaEdit, FaTrash } from 'react-icons/fa'
+import { BsStarFill, BsStarHalf, BsStar } from 'react-icons/bs'
+import { BASE_URL } from '../../config'
 
 export interface Post {
-  _id: string;
-  title: string;
-  author: string;
-  textContent: string;
-  imagePath?: string;
-  createdAt: string;
-  category: string;
-  authorImage: string;
-  ratingQuantity: number;
-  averageRating: number;
-  videoContent?: string;
+  _id: string
+  title: string
+  author: string
+  textContent: string
+  imagePath?: string
+  createdAt: string
+  category: string
+  authorImage: string
+  ratingQuantity: number
+  averageRating: number
+  videoContent?: string
 }
 
 interface PostContentProps {
-  post: Post | any;
-  isAuthor: boolean;
-  handleEdit: (postId: string) => void;
-  setPostToDelete: (postId: string | null) => void;
+  post: Post | any
+  isAuthor: boolean
+  handleEdit: (postId: string) => void
+  setPostToDelete: (postId: string | null) => void
 }
 
 const PostContent: React.FC<PostContentProps> = ({
@@ -35,13 +35,13 @@ const PostContent: React.FC<PostContentProps> = ({
 }) => {
   const useCarousel =
     (post.imagePath && post.videoContent) ||
-    (post.imagePath && post.imagePath.includes(",")) ||
-    (post.videoContent && post.imagePath);
+    (post.imagePath && post.imagePath.includes(',')) ||
+    (post.videoContent && post.imagePath)
 
   const renderStars = (rating: number) => {
-    const fullStars = Math.floor(rating);
-    const halfStars = rating % 1 >= 0.5 ? 1 : 0;
-    const emptyStars = 5 - fullStars - halfStars;
+    const fullStars = Math.floor(rating)
+    const halfStars = rating % 1 >= 0.5 ? 1 : 0
+    const emptyStars = 5 - fullStars - halfStars
 
     return (
       <>
@@ -57,8 +57,8 @@ const PostContent: React.FC<PostContentProps> = ({
             <BsStar key={i} className="text-yellow-400" />
           ))}
       </>
-    );
-  };
+    )
+  }
 
   return (
     <div className="col-span-2 bg-white shadow-md rounded-lg p-6">
@@ -67,7 +67,7 @@ const PostContent: React.FC<PostContentProps> = ({
         <Carousel showThumbs={false} showStatus={false}>
           {post.imagePath &&
             post.imagePath
-              .split(",")
+              .split(',')
               .map((image: string, index: React.Key | null | undefined) => (
                 <div key={index} className="relative w-full h-80">
                   <img
@@ -82,7 +82,7 @@ const PostContent: React.FC<PostContentProps> = ({
               <video
                 controls
                 className="absolute inset-0 w-full h-full object-contain rounded-lg mb-4 shadow-lg"
-                style={{ outline: "none" }}
+                style={{ outline: 'none' }}
               >
                 <source
                   src={`${BASE_URL}/${post.videoContent}`}
@@ -106,7 +106,7 @@ const PostContent: React.FC<PostContentProps> = ({
             <video
               controls
               className="absolute inset-0 w-full h-full object-contain rounded-lg mb-4 shadow-lg"
-              style={{ outline: "none" }}
+              style={{ outline: 'none' }}
             >
               <source
                 src={`${BASE_URL}/${post.videoContent}`}
@@ -151,7 +151,7 @@ const PostContent: React.FC<PostContentProps> = ({
               type="button"
               onClick={() => handleEdit(post._id)}
               className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white py-1 px-3 rounded-full shadow-md transition duration-300 disabled:opacity-50 flex items-center justify-center"
-              style={{ minWidth: "100px" }}
+              style={{ minWidth: '100px' }}
             >
               <FaEdit className="mr-1" />
               Edit
@@ -161,7 +161,7 @@ const PostContent: React.FC<PostContentProps> = ({
               type="button"
               onClick={() => setPostToDelete(post._id)}
               className="bg-red-500 hover:from-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 text-white py-1 px-3 rounded-full shadow-md transition duration-300 disabled:opacity-50 flex items-center justify-center"
-              style={{ minWidth: "100px" }}
+              style={{ minWidth: '100px' }}
             >
               <FaTrash className="mr-1 " />
               Delete
@@ -170,7 +170,7 @@ const PostContent: React.FC<PostContentProps> = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PostContent;
+export default PostContent
