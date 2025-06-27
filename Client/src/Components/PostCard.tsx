@@ -90,7 +90,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   }
 
   console.log(post)
-  const normalizePath = (path) => path?.replace(/\\/g, '/')
+  const normalizePath = (path: string | undefined) => path?.replace(/\\/g, '/')
 
   const mediaItems = [
     {
