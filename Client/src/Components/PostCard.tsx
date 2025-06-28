@@ -39,8 +39,14 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
     'image' | 'video' | null
   >(null)
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
-
   const popupRef = useRef<HTMLDivElement>(null)
+
+  const normalizePath = (path: string | undefined) => path?.replace(/\\/g, '/')
+
+  const mediaItems = [
+    { type: 'image', url: `${BASE_URL}${normalizePath(post.imagePath)}` },
+    { type: 'video', url: `${BASE_URL}${normalizePath(post.videoContent)}` },
+  ].filter((m) => m.url && m.url !== `${BASE_URL}undefined`)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -51,24 +57,15 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         closeMediaPopup()
       }
     }
-
-    if (showMediaPopup) {
+    if (showMediaPopup)
       document.addEventListener('mousedown', handleClickOutside)
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [showMediaPopup])
 
   const openMediaPopup = (mediaUrl: string, type: string) => {
-    if (type === 'image') {
-      setPopupMedia(mediaUrl)
-      setPopupMediaType(type)
-      setShowMediaPopup(true)
-    }
+    setPopupMedia(mediaUrl)
+    setPopupMediaType(type as 'image' | 'video')
+    setShowMediaPopup(true)
   }
 
   const closeMediaPopup = () => {
@@ -78,106 +75,76 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   }
 
   const handlePreviousMedia = () => {
-    if (currentMediaIndex > 0) {
-      setCurrentMediaIndex(currentMediaIndex - 1)
-    }
+    setCurrentMediaIndex((prev) => Math.max(prev - 1, 0))
   }
 
   const handleNextMedia = () => {
-    if (currentMediaIndex < 1) {
-      setCurrentMediaIndex(currentMediaIndex + 1)
-    }
+    setCurrentMediaIndex((prev) => Math.min(prev + 1, mediaItems.length - 1))
   }
 
-  console.log(post)
-  const normalizePath = (path: string | undefined) => path?.replace(/\\/g, '/')
-
-  const mediaItems = [
-    {
-      type: 'image',
-      url: `${BASE_URL}${normalizePath(post.imagePath)}`,
-    },
-    {
-      type: 'video',
-      url: `${BASE_URL}${normalizePath(post.videoContent)}`,
-    },
-  ]
-
   return (
-    <Card sx={{ maxWidth: 394 }}>
-      <div
-        style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}
-      >
-        {mediaItems.map(
-          (media, index) =>
-            index === currentMediaIndex && (
-              <CardMedia
-                key={index}
-                component={media.type === 'image' ? 'img' : 'video'}
-                image={media.url}
-                title={post.title}
-                onClick={() => openMediaPopup(media.url, media.type)}
-                className="cursor-pointer rounded-md"
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  zIndex: 1,
-                  display: index === currentMediaIndex ? 'block' : 'none',
-                }}
-                controls={media.type === 'video'}
-              />
-            )
+    <Card className="rounded-2xl overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg bg-white">
+      <div className="relative w-full pt-[56.25%] bg-gray-100 overflow-hidden group">
+        {mediaItems.length > 0 && (
+          <CardMedia
+            component={
+              mediaItems[currentMediaIndex].type === 'image' ? 'img' : 'video'
+            }
+            image={mediaItems[currentMediaIndex].url}
+            title={post.title}
+            onClick={() =>
+              openMediaPopup(
+                mediaItems[currentMediaIndex].url,
+                mediaItems[currentMediaIndex].type
+              )
+            }
+            className="absolute top-0 left-0 w-full h-full object-cover cursor-pointer transition-transform duration-300 group-hover:scale-105"
+            controls={mediaItems[currentMediaIndex].type === 'video'}
+          />
         )}
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            zIndex: 2,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            width: '100%',
-          }}
-        >
-          <FaArrowLeft
-            className="cursor-pointer"
-            onClick={handlePreviousMedia}
-            style={{
-              visibility: currentMediaIndex === 0 ? 'hidden' : 'visible',
-            }}
-          />
-          <FaArrowRight
-            className="cursor-pointer"
-            onClick={handleNextMedia}
-            style={{
-              visibility: currentMediaIndex === 1 ? 'hidden' : 'visible',
-            }}
-          />
-        </div>
+        {mediaItems.length > 1 && (
+          <div className="absolute top-1/2 left-0 w-full flex justify-between px-4 z-10 transform -translate-y-1/2">
+            <FaArrowLeft
+              onClick={handlePreviousMedia}
+              className={`bg-white/70 hover:bg-white text-gray-700 rounded-full p-2 cursor-pointer shadow-md transition ${
+                currentMediaIndex === 0
+                  ? 'opacity-0 pointer-events-none'
+                  : 'opacity-100'
+              }`}
+              size={28}
+            />
+            <FaArrowRight
+              onClick={handleNextMedia}
+              className={`bg-white/70 hover:bg-white text-gray-700 rounded-full p-2 cursor-pointer shadow-md transition ${
+                currentMediaIndex === mediaItems.length - 1
+                  ? 'opacity-0 pointer-events-none'
+                  : 'opacity-100'
+              }`}
+              size={28}
+            />
+          </div>
+        )}
       </div>
 
-      <CardContent>
-        <div className="flex items-center mb-2 gap-2">
+      <CardContent className="p-4">
+        <div className="flex items-center gap-2 mb-2">
           <FaRegBookmark className="text-purple-500" />
-          <span className="text-xs text-white py-1 rounded-full px-4 bg-purple-500 uppercase font-semibold mr-2">
+          <span className="bg-purple-100 text-purple-600 text-xs font-semibold px-3 py-1 rounded-full uppercase">
             {post.category}
           </span>
         </div>
-        <Typography gutterBottom variant="h5" component="div">
+
+        <Typography variant="h6" className="font-bold mb-1 text-gray-800">
           {post.title}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+
+        <Typography variant="body2" className="text-gray-600 leading-snug">
           {post.textContent.length > 50 ? (
             <>
               {post.textContent.substring(0, 50)}...
               <Link
                 to={`/post/${post._id}`}
-                className="text-purple-500 ml-1 flex items-center cursor-pointer"
+                className="text-purple-500 ml-1 inline-flex items-center font-medium hover:underline"
               >
                 <FontAwesomeIcon icon={faEye} className="mr-1" />
                 See more
@@ -189,7 +156,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         </Typography>
       </CardContent>
 
-      <div className="">
+      <div className="px-4 pb-4">
         <PostHeader
           ratingQuantity={post.ratingQuantity}
           averageRating={post.averageRating}
@@ -210,21 +177,20 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             return (
               <img
                 src={popupMedia ?? ''}
-                alt="Popup Media"
-                className="w-full h-full object-cover rounded-t-lg"
+                alt="Popup"
+                className="w-full h-full object-contain rounded-lg"
               />
             )
           } else if (popupMediaType === 'video') {
             return (
               <video
                 src={popupMedia ?? ''}
-                className="w-full h-full object-cover rounded-t-lg"
+                className="w-full h-full object-contain rounded-lg"
                 controls
               />
             )
-          } else {
-            return null
           }
+          return null
         }}
       />
     </Card>
