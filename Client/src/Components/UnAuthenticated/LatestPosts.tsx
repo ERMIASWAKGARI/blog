@@ -131,74 +131,66 @@ const LatestPosts: React.FC = () => {
                   <motion.div
                     key={post._id}
                     variants={item}
-                    whileHover={{
-                      scale: 1.03,
-                      transition: { duration: 0.2 },
-                    }}
-                    className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer"
+                    whileHover={{ scale: 1.02 }}
+                    className="group relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden border border-gray-200"
                     onClick={() => handlePostClick(post)}
                   >
-                    <div className="relative">
+                    <div className="relative h-52 overflow-hidden">
                       {post.imagePath && !post.videoContent && (
                         <img
                           src={`${BASE_URL}/${post.imagePath}`}
                           alt={post.title}
-                          className="w-full h-48 object-cover"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       )}
                       {post.videoContent && (
                         <video
                           src={`${BASE_URL}/${post.videoContent}`}
                           controls
-                          className="w-full h-48 object-cover"
-                        ></video>
+                          className="w-full h-full object-cover"
+                        />
                       )}
-                      <div className="absolute top-4 right-4">
-                        <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                          {post.category}
-                        </span>
-                      </div>
+                      <span className="absolute top-3 left-3 bg-purple-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                        {post.category}
+                      </span>
                     </div>
 
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold mb-3 line-clamp-2 hover:text-purple-600 transition-colors duration-200">
+                    <div className="p-5">
+                      <h3 className="text-lg font-semibold mb-2 text-gray-800 line-clamp-2">
                         {post.title}
                       </h3>
-
-                      <p className="text-gray-600 mb-4 line-clamp-2">
+                      <p className="text-sm text-gray-600 mb-4 line-clamp-3">
                         {post.textContent}
                       </p>
 
-                      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                        <div className="flex items-center">
-                          <FaUser className="text-purple-500 mr-2" />
+                      <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                        <div className="flex items-center gap-1">
+                          <FaUser className="text-purple-500" />
                           <span>{post.author}</span>
                         </div>
-                        <div className="flex items-center">
-                          <FaClock className="text-purple-500 mr-2" />
+                        <div className="flex items-center gap-1">
+                          <FaClock className="text-purple-500" />
                           <span>{moment(post.createdAt).fromNow()}</span>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <FaStar className="text-yellow-400 mr-1" />
-                          <span className="text-gray-600">
+                        <div className="flex items-center gap-1 text-sm text-gray-600">
+                          <FaStar className="text-yellow-400" />
+                          <span>
                             {post.averageRating?.toFixed(1) || '0.0'} (
                             {post.ratingQuantity || 0})
                           </span>
                         </div>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
+                        <button
                           onClick={(e) => {
                             e.stopPropagation()
                             handlePostClick(post)
                           }}
-                          className="text-purple-600 font-semibold hover:text-purple-700 transition-colors duration-200"
+                          className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
                         >
-                          Read more →
-                        </motion.button>
+                          Read More →
+                        </button>
                       </div>
                     </div>
                   </motion.div>
