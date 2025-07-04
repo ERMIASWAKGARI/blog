@@ -1,79 +1,78 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import React, { useState } from 'react'
+import { FaEdit, FaTrash } from 'react-icons/fa'
+import 'react-responsive-carousel/lib/styles/carousel.min.css'
+import { Link, useNavigate } from 'react-router-dom'
 
-import axios from "axios";
-import SuccessMessage from "./SuccessMessage";
+import axios from 'axios'
+import SuccessMessage from './SuccessMessage'
 
-import { BASE_URL } from "../../../config";
-import api from "../../../axiosConfig";
+import api from '../../../axiosConfig'
 
 interface Post {
-  _id: string;
-  title: string;
-  author: string;
-  category: string;
-  createdAt: string;
-  averageRating: number;
-  textContent: string;
-  imagePath: string;
-  videoContent?: string;
+  _id: string
+  title: string
+  author: string
+  category: string
+  createdAt: string
+  averageRating: number
+  textContent: string
+  imagePath: string
+  videoContent?: string
 }
 
 interface UserPostsProps {
-  posts: Post[];
-  setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+  posts: Post[]
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>
 }
 
 const UserPosts: React.FC<UserPostsProps> = ({ posts, setPosts }) => {
-  const [visiblePostsCount, setVisiblePostsCount] = useState(2);
-  const [postToDelete, setPostToDelete] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [confirmDeleteAll, setConfirmDeleteAll] = useState(false);
-  const navigate = useNavigate();
+  const [visiblePostsCount, setVisiblePostsCount] = useState(2)
+  const [postToDelete, setPostToDelete] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [confirmDeleteAll, setConfirmDeleteAll] = useState(false)
+  const navigate = useNavigate()
 
   const handleLoadMore = () => {
-    setVisiblePostsCount((prevCount) => prevCount + 2);
-  };
+    setVisiblePostsCount((prevCount) => prevCount + 2)
+  }
 
   const handleEdit = (postId: string) => {
-    navigate(`/profile/editPost/${postId}`);
-  };
+    navigate(`/profile/editPost/${postId}`)
+  }
 
   const handleDelete = async (postId: string) => {
     try {
-      await api.delete(`/post/deletePost/${postId}`);
-      setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
-      setSuccessMessage("Post deleted successfully!");
-      setPostToDelete(null);
+      await api.delete(`/post/deletePost/${postId}`)
+      setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId))
+      setSuccessMessage('Post deleted successfully!')
+      setPostToDelete(null)
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        console.error("Error deleting post:", error.response.data);
+        console.error('Error deleting post:', error.response.data)
       } else {
-        console.error("Error deleting post:", error);
+        console.error('Error deleting post:', error)
       }
     }
-  };
+  }
 
   const handleDeleteAllPosts = async () => {
     try {
-      await api.delete("/post/deleteAllMyPost");
-      setPosts([]);
-      setSuccessMessage("All posts deleted successfully!");
-      setConfirmDeleteAll(false);
+      await api.delete('/post/deleteAllMyPost')
+      setPosts([])
+      setSuccessMessage('All posts deleted successfully!')
+      setConfirmDeleteAll(false)
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        console.error("Error deleting all posts:", error.response.data);
+        console.error('Error deleting all posts:', error.response.data)
       } else {
-        console.error("Error deleting all posts:", error);
+        console.error('Error deleting all posts:', error)
       }
     }
-  };
+  }
 
   const sortedPosts = posts.sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+  )
 
   return (
     <div className="px-6 py-8 bg-gray-100 min-h-screen">
@@ -92,7 +91,7 @@ const UserPosts: React.FC<UserPostsProps> = ({ posts, setPosts }) => {
         <Link to="/profile/addPost">
           <button
             className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white py-2 px-6 rounded-full shadow-md transition duration-300 disabled:opacity-50"
-            style={{ minWidth: "120px" }}
+            style={{ minWidth: '120px' }}
           >
             Create Post
           </button>
@@ -115,7 +114,7 @@ const UserPosts: React.FC<UserPostsProps> = ({ posts, setPosts }) => {
               <>
                 {post.imagePath && (
                   <img
-                    src={`${BASE_URL}/${post.imagePath.replace(/\\/g, "/")}`}
+                    src={post.imagePath}
                     alt={post.title}
                     className="w-full h-32 object-cover"
                   />
@@ -124,15 +123,9 @@ const UserPosts: React.FC<UserPostsProps> = ({ posts, setPosts }) => {
                   <video
                     controls
                     className="w-full h-32 object-cover"
-                    style={{ outline: "none" }}
+                    style={{ outline: 'none' }}
                   >
-                    <source
-                      src={`${BASE_URL}/${post.videoContent.replace(
-                        /\\/g,
-                        "/"
-                      )}`}
-                      type="video/mp4"
-                    />
+                    <source src={post.videoContent} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
                 )}
@@ -167,7 +160,7 @@ const UserPosts: React.FC<UserPostsProps> = ({ posts, setPosts }) => {
                   <button
                     onClick={() => handleEdit(post._id)}
                     className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white py-1 px-3 rounded-full shadow-md transition duration-300 disabled:opacity-50 flex  justify-center items-center"
-                    style={{ minWidth: "100px" }}
+                    style={{ minWidth: '100px' }}
                   >
                     <FaEdit className="mr-1" />
                     Edit
@@ -176,7 +169,7 @@ const UserPosts: React.FC<UserPostsProps> = ({ posts, setPosts }) => {
                   <button
                     onClick={() => setPostToDelete(post._id)}
                     className="bg-red-500 text-white py-1 px-3 rounded-full hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex items-center justify-center"
-                    style={{ minWidth: "100px" }}
+                    style={{ minWidth: '100px' }}
                   >
                     <FaTrash className="mr-1 " />
                     Delete
@@ -193,7 +186,7 @@ const UserPosts: React.FC<UserPostsProps> = ({ posts, setPosts }) => {
           <button
             onClick={handleLoadMore}
             className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white py-2 px-6 rounded-full shadow-md transition duration-300 disabled:opacity-50"
-            style={{ minWidth: "120px" }}
+            style={{ minWidth: '120px' }}
           >
             Load More
           </button>
@@ -246,7 +239,7 @@ const UserPosts: React.FC<UserPostsProps> = ({ posts, setPosts }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default UserPosts;
+export default UserPosts
