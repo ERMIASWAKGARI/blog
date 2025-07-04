@@ -4,7 +4,6 @@ import { BsStar, BsStarFill, BsStarHalf } from 'react-icons/bs'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { Carousel } from 'react-responsive-carousel'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
-import { BASE_URL } from '../../config'
 
 export interface Post {
   _id: string
@@ -71,7 +70,7 @@ const PostContent: React.FC<PostContentProps> = ({
               .map((image: string, index: React.Key | null | undefined) => (
                 <div key={index} className="relative w-full h-80">
                   <img
-                    src={`${BASE_URL}/${image.trim()}`}
+                    src={image.trim()}
                     alt={post.title}
                     className="absolute inset-0 w-full h-full object-contain rounded-lg mb-4 shadow-lg"
                   />
