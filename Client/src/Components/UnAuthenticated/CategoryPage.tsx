@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { FaArrowLeft } from 'react-icons/fa'
 import { useNavigate, useParams } from 'react-router-dom'
 import api from '../../axiosConfig'
+import LoadingSpinner from './LoadingSpinner'
 import Modal from './Modal'
 import Navbar from './Navbar'
 
@@ -87,9 +88,7 @@ const CategoryPage: React.FC = () => {
           </h2>
 
           {loading && currentPage === 1 ? (
-            <div className="flex justify-center items-center h-40">
-              <span className="text-gray-500 text-lg">Loading posts...</span>
-            </div>
+            <LoadingSpinner loading={loading} />
           ) : posts.length === 0 ? (
             <div className="flex justify-center items-center h-40">
               <p className="text-gray-500 text-lg">No posts available.</p>

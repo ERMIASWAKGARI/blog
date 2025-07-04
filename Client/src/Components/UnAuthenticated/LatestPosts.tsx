@@ -2,8 +2,8 @@ import { motion } from 'framer-motion'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { FaClock, FaStar, FaUser } from 'react-icons/fa'
-import { ClipLoader } from 'react-spinners'
 import api from '../../axiosConfig'
+import LoadingSpinner from './LoadingSpinner'
 import Modal from './Modal'
 
 interface Post {
@@ -111,7 +111,7 @@ const LatestPosts: React.FC = () => {
 
         {loading && currentPage === 1 ? (
           <div className="flex justify-center items-center min-h-[400px]">
-            <ClipLoader size={50} color={'#6b21a8'} loading={loading} />
+            <LoadingSpinner loading={loading} />
           </div>
         ) : (
           <>
