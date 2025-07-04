@@ -1,164 +1,163 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from "react";
-import NavbarLoggedIn from "../Components/AuthenticatedNavbar";
-import { useUser } from "../UserContext";
-import UserProfileField from "../Components/Profile/UserProfile/UserProfileField";
-import UserProfilePhoto from "../Components/Profile/UserProfile/UserProfilePhoto";
-import UserPosts from "../Components/Profile/UserProfile/UserPosts";
-import SuccessMessage from "../Components/Profile/UserProfile/SuccessMessage";
-import PasswordChangeForm from "../Components/Profile/UserProfile/PasswordChangeForm";
-import { FaUser, FaEnvelope, FaLock, FaCamera } from "react-icons/fa";
+import React, { useEffect, useState } from 'react'
+import { FaCamera, FaEnvelope, FaLock, FaUser } from 'react-icons/fa'
+import NavbarLoggedIn from '../Components/AuthenticatedNavbar'
+import PasswordChangeForm from '../Components/Profile/UserProfile/PasswordChangeForm'
+import SuccessMessage from '../Components/Profile/UserProfile/SuccessMessage'
+import UserPosts from '../Components/Profile/UserProfile/UserPosts'
+import UserProfileField from '../Components/Profile/UserProfile/UserProfileField'
+import UserProfilePhoto from '../Components/Profile/UserProfile/UserProfilePhoto'
+import LoadingSpinner from '../Components/UnAuthenticated/LoadingSpinner'
+import { useUser } from '../UserContext'
 
-import api from "../axiosConfig";
+import api from '../axiosConfig'
 
 export interface User {
-  _id: string;
-  title: string;
-  author: string;
-  textContent: string;
-  imagePath?: string;
-  createdAt: string;
-  category: string;
-  authorImage: string;
-  ratingQuantity: number;
-  averageRating: number;
-  videoContent?: string;
-  gender: "male" | "female";
+  _id: string
+  title: string
+  author: string
+  textContent: string
+  imagePath?: string
+  createdAt: string
+  category: string
+  authorImage: string
+  ratingQuantity: number
+  averageRating: number
+  videoContent?: string
+  gender: 'male' | 'female'
 }
 
 export interface Post {
-  _id: string;
-  title: string;
-  author: string;
-  textContent: string;
-  imagePath?: string;
-  createdAt: string;
-  category: string;
-  authorImage: string;
-  ratingQuantity: number;
-  averageRating: number;
-  videoContent?: string;
+  _id: string
+  title: string
+  author: string
+  textContent: string
+  imagePath?: string
+  createdAt: string
+  category: string
+  authorImage: string
+  ratingQuantity: number
+  averageRating: number
+  videoContent?: string
 }
 
 const UserProfile: React.FC = () => {
-  const { user: currentUser, setUser: setCurrentUser } = useUser();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [editField, setEditField] = useState<string | null>(null);
-  const [formData, setFormData] = useState<Partial<User> | null | any>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const { user: currentUser, setUser: setCurrentUser } = useUser()
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [editField, setEditField] = useState<string | null>(null)
+  const [formData, setFormData] = useState<Partial<User> | null | any>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>(
     {
       newPassword: null,
       passwordConfirm: null,
     }
-  );
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  )
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
 
-  const [posts, setPosts] = useState<Post[] | any>([]);
+  const [posts, setPosts] = useState<Post[] | any>([])
 
   useEffect(() => {
-    fetchUserData();
-  }, []);
+    fetchUserData()
+  }, [])
 
   const fetchUserData = async () => {
     try {
-      const response = await api.get(`/users/me`);
+      const response = await api.get(`/users/me`)
 
-      setCurrentUser(response.data.data.data);
-      setPosts(response.data.data.data.posts);
-      setLoading(false);
+      setCurrentUser(response.data.data.data)
+      setPosts(response.data.data.data.posts)
+      setLoading(false)
     } catch (error) {
-      console.error("Error fetching user data:", error);
-      setError("Failed to fetch user data");
-      setLoading(false);
+      console.error('Error fetching user data:', error)
+      setError('Failed to fetch user data')
+      setLoading(false)
     }
-  };
+  }
 
   const handleEdit = (field: string | null) => {
-    setEditField(field);
-    setFormData({ ...currentUser });
-  };
+    setEditField(field)
+    setFormData({ ...currentUser })
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setFormData((prevFormData: any) => ({
       ...prevFormData,
       [name]: value,
-    }));
+    }))
 
     setFieldErrors((prevErrors) => ({
       ...prevErrors,
       [name]: null,
-    }));
-  };
+    }))
+  }
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const file = e.target.files[0];
+      const file = e.target.files[0]
       setFormData((prevFormData: any) => ({
         ...prevFormData,
         photo: URL.createObjectURL(file),
-      }));
+      }))
     }
-  };
+  }
 
   const handleSubmit = async (e: React.FormEvent, field: string) => {
-    e.preventDefault();
-    setError(null);
+    e.preventDefault()
+    setError(null)
 
-    if (field === "password") {
+    if (field === 'password') {
       const { newPassword, passwordConfirm } = formData as {
-        newPassword: string;
-        passwordConfirm: string;
-      };
+        newPassword: string
+        passwordConfirm: string
+      }
       if (!newPassword || newPassword.length < 8) {
         setFieldErrors((prevErrors) => ({
           ...prevErrors,
-          newPassword: "New password must be at least 8 characters long.",
-        }));
-        return;
+          newPassword: 'New password must be at least 8 characters long.',
+        }))
+        return
       }
       if (newPassword !== passwordConfirm) {
         setFieldErrors((prevErrors) => ({
           ...prevErrors,
           passwordConfirm:
-            "New password and password confirmation do not match.",
-        }));
-        return;
+            'New password and password confirmation do not match.',
+        }))
+        return
       }
     }
 
     try {
-      const { endpoint, data } = getEndpointAndData(field);
+      const { endpoint, data } = getEndpointAndData(field)
 
       const response = await api.patch(endpoint, data, {
         headers: {
-          ...(field === "photo" && { "Content-Type": "multipart/form-data" }),
+          ...(field === 'photo' && { 'Content-Type': 'multipart/form-data' }),
         },
-      });
+      })
 
-      console.log(response);
+      console.log(response)
 
-      if (field === "password") {
-        localStorage.removeItem("authToken");
-        setSuccessMessage(
-          "Password changed successfully! Please log in again."
-        );
+      if (field === 'password') {
+        localStorage.removeItem('authToken')
+        setSuccessMessage('Password changed successfully! Please log in again.')
         setTimeout(() => {
-          window.location.href = "/login";
-        }, 3000);
+          window.location.href = '/login'
+        }, 3000)
       } else {
-        setSuccessMessage(`${capitalize(field)} updated successfully!`);
-        setEditField(null);
-        await fetchUserData();
+        setSuccessMessage(`${capitalize(field)} updated successfully!`)
+        setEditField(null)
+        await fetchUserData()
       }
     } catch (error: any) {
-      console.error("Error updating user data:", error);
+      console.error('Error updating user data:', error)
       if (
-        field === "password" &&
+        field === 'password' &&
         error.response &&
         error.response.data &&
         error.response.data.message
@@ -166,77 +165,73 @@ const UserProfile: React.FC = () => {
         setFieldErrors((prevErrors) => ({
           ...prevErrors,
           oldPassword: error.response.data.message,
-        }));
+        }))
       } else {
-        setError("Failed to update user data");
+        setError('Failed to update user data')
       }
     }
-  };
+  }
 
   const getEndpointAndData = (field: string) => {
-    let endpoint = "/users/";
-    let data: any = {};
+    let endpoint = '/users/'
+    let data: any = {}
 
     switch (field) {
-      case "name":
-        endpoint += "changeName";
-        data = { name: formData?.name };
-        break;
-      case "email":
-        endpoint += "updateEmail";
-        data = { email: formData?.email };
-        break;
-      case "password":
-        endpoint += "updatePassword";
+      case 'name':
+        endpoint += 'changeName'
+        data = { name: formData?.name }
+        break
+      case 'email':
+        endpoint += 'updateEmail'
+        data = { email: formData?.email }
+        break
+      case 'password':
+        endpoint += 'updatePassword'
         data = {
           oldPassword: formData?.oldPassword,
           newPassword: formData?.newPassword,
           passwordConfirm: formData?.passwordConfirm,
-        };
-        break;
-      case "photo":
-        endpoint += "changePhoto";
-        data = new FormData();
-        data.append("photo", formData?.photo as Blob);
-        break;
+        }
+        break
+      case 'photo':
+        endpoint += 'changePhoto'
+        data = new FormData()
+        data.append('photo', formData?.photo as Blob)
+        break
       default:
-        throw new Error("Invalid field");
+        throw new Error('Invalid field')
     }
 
-    return { endpoint, data };
-  };
+    return { endpoint, data }
+  }
 
-  const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+  const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
   const handleDeleteAccount = async () => {
     try {
-      const authToken = localStorage.getItem("authToken");
+      const authToken = localStorage.getItem('authToken')
 
       if (!authToken) {
-        throw new Error("Authentication token not found");
+        throw new Error('Authentication token not found')
       }
 
-      setShowDeleteModal(false);
+      setShowDeleteModal(false)
 
-      await api.delete("/users/deleteMe");
+      await api.delete('/users/deleteMe')
 
-      localStorage.removeItem("authToken");
-      setSuccessMessage("Account deleted successfully!");
+      localStorage.removeItem('authToken')
+      setSuccessMessage('Account deleted successfully!')
       setTimeout(() => {
-        window.location.href = "/";
-      }, 3000);
+        window.location.href = '/'
+      }, 3000)
     } catch (error) {
-      console.error("Error deleting account:", error);
-      setError("Failed to delete account");
+      console.error('Error deleting account:', error)
+      setError('Failed to delete account')
     }
-  };
-
-  if (loading) {
-    return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div>Error: {error}</div>
   }
 
   return (
@@ -244,6 +239,7 @@ const UserProfile: React.FC = () => {
       <NavbarLoggedIn />
       <div className="container mx-auto px-4 py-8 lg:px-8 flex flex-col lg:flex-row gap-8">
         <div className="max-w-md">
+          {loading && <LoadingSpinner loading={loading} />}
           <div className="bg-white rounded-lg overflow-hidden shadow-lg border border-gray-300">
             <h2 className="text-3xl font-bold px-6 py-4 bg-gray-100 border-b border-gray-300">
               User Information
@@ -284,7 +280,7 @@ const UserProfile: React.FC = () => {
                 handleEdit={handleEdit}
                 error={null}
               />
-              {editField === "password" ? (
+              {editField === 'password' ? (
                 <PasswordChangeForm
                   currentUser={currentUser}
                   editField={editField}
@@ -293,9 +289,9 @@ const UserProfile: React.FC = () => {
                   handleSubmit={handleSubmit}
                   formData={
                     formData as {
-                      oldPassword: string;
-                      newPassword: string;
-                      passwordConfirm: string;
+                      oldPassword: string
+                      newPassword: string
+                      passwordConfirm: string
                     }
                   }
                   fieldErrors={fieldErrors}
@@ -368,7 +364,7 @@ const UserProfile: React.FC = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default UserProfile;
+export default UserProfile
