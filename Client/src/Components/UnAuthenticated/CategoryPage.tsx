@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { FaArrowLeft } from 'react-icons/fa'
 import { useNavigate, useParams } from 'react-router-dom'
 import api from '../../axiosConfig'
-import { BASE_URL } from '../../config'
 import Modal from './Modal'
 import Navbar from './Navbar'
 
@@ -105,7 +104,7 @@ const CategoryPage: React.FC = () => {
                     className="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer group overflow-hidden"
                   >
                     <img
-                      src={`${BASE_URL}/${post.imagePath}`}
+                      src={post.imagePath}
                       alt={post.title}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
