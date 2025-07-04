@@ -38,10 +38,18 @@ router.get('/getAllposts', getAllPosts)
 router.patch(
   '/update/:id',
   protect,
-  upload.fields([
-    { name: 'image', maxCount: 1 },
-    { name: 'video', maxCount: 1 },
-  ]),
+  (req, res, next) => {
+    fileUpload.fields([
+      { name: 'image', maxCount: 1 },
+      { name: 'video', maxCount: 1 },
+    ])(req, res, (err) => {
+      if (err) {
+        console.error('Multer error:', err)
+        return res.status(400).json({ status: 'fail', message: err.message })
+      }
+      next()
+    })
+  },
   updatePost
 )
 router.get('/getMyPost', protect, getMyPost)

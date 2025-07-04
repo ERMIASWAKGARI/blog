@@ -47,29 +47,24 @@ exports.updatePost = asyncWrapper(async (req, res, next) => {
     })
   }
 
-  const files = req.files
-
-  if (files.image && files.image.length > 0) {
-    const imagePath = files.image[0].path.replace(
-      path.join(__dirname, '../../public'),
-      ''
-    )
-    req.body.imagePath = imagePath
-  }
-
-  if (files.video && files.video.length > 0) {
-    const videoPath = files.video[0].path.replace(
-      path.join(__dirname, '../../public'),
-      ''
-    )
-    req.body.videoContent = videoPath
-  }
-
+  // Optional: Check if the current user is allowed to update the post
   if (post.user.toString() !== req.user.id) {
     return res.status(403).json({
       status: 'fail',
       message: 'User not authorized to update this post',
     })
+  }
+
+  const files = req.files
+
+  if (files?.image && files.image.length > 0) {
+    req.body.imagePath =
+      files.image[0].path || files.image[0].secure_url || files.image[0].url
+  }
+
+  if (files?.video && files.video.length > 0) {
+    req.body.videoContent =
+      files.video[0].path || files.video[0].secure_url || files.video[0].url
   }
 
   req.body.author = req.user.name
@@ -82,9 +77,7 @@ exports.updatePost = asyncWrapper(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    message: req.file
-      ? 'File updated successfully'
-      : 'Data updated successfully',
+    message: 'Post updated successfully',
     data: {
       updatedPost,
     },
