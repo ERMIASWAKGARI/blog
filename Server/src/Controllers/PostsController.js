@@ -7,15 +7,18 @@ const Post = require('../models/postModel')
 const asyncWrapper = require('../utils/asyncWrapper')
 
 exports.addPost = asyncWrapper(async (req, res, next) => {
-  console.log('Adding post:', req.body)
+  console.log('Incoming files:', req.files)
+
   const files = req.files
 
   if (files?.image && files.image.length > 0) {
-    req.body.imagePath = files.image[0].path
+    req.body.imagePath =
+      files.image[0].path || files.image[0].secure_url || files.image[0].url
   }
 
   if (files?.video && files.video.length > 0) {
-    req.body.videoContent = files.video[0].path
+    req.body.videoContent =
+      files.video[0].path || files.video[0].secure_url || files.video[0].url
   }
 
   req.body.author = req.user.name
