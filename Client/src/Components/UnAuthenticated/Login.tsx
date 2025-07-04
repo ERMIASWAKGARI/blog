@@ -122,8 +122,6 @@ const Login: React.FC = () => {
                 Forgot password?
               </Link>
             </div>
-            <hr className="my-4" />
-            <div className="text-center">or SIGNUP VIA: </div>
           </form>
         )}
       </div>
