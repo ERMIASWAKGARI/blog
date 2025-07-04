@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react'
 import { FaClock, FaStar, FaUser } from 'react-icons/fa'
 import { ClipLoader } from 'react-spinners'
 import api from '../../axiosConfig'
-import { BASE_URL } from '../../config'
 import Modal from './Modal'
 
 interface Post {
@@ -145,7 +144,7 @@ const LatestPosts: React.FC = () => {
                       )}
                       {post.videoContent && (
                         <video
-                          src={`${BASE_URL}/${post.videoContent}`}
+                          src={post.videoContent}
                           controls
                           className="w-full h-full object-cover"
                         />
