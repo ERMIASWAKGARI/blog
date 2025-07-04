@@ -1,18 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
-import { IconType } from "react-icons";
+import React from 'react'
+import { IconType } from 'react-icons'
 
-import maleDefault from "../../../../public/john_doe.png";
-import femaleDefault from "../../../../public/jane_smith.png";
-import { BASE_URL } from "../../../config";
+import femaleDefault from '../../../../public/jane_smith.png'
+import maleDefault from '../../../../public/john_doe.png'
 
 interface UserProfilePhotoProps {
-  currentUser: any;
-  editField: string | null;
-  handleEdit: (field: string) => void;
-  handlePhotoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleSubmit: (e: React.FormEvent, field: string) => void;
-  icon: IconType;
+  currentUser: any
+  editField: string | null
+  handleEdit: (field: string) => void
+  handlePhotoChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleSubmit: (e: React.FormEvent, field: string) => void
+  icon: IconType
 }
 
 const UserProfilePhoto: React.FC<UserProfilePhotoProps> = ({
@@ -23,27 +22,27 @@ const UserProfilePhoto: React.FC<UserProfilePhotoProps> = ({
   handleSubmit,
   icon: Icon,
 }) => {
-  const gradientBg = "bg-gradient-to-b from-blue-400 to-indigo-500";
+  const gradientBg = 'bg-gradient-to-b from-blue-400 to-indigo-500'
 
   const photoSrc = currentUser?.photo
-    ? `${BASE_URL}/${currentUser.photo}`
-    : currentUser.gender === "female"
+    ? `${currentUser.photo}`
+    : currentUser.gender === 'female'
     ? femaleDefault
-    : maleDefault;
+    : maleDefault
 
   return (
-    <form onSubmit={(e) => handleSubmit(e, "photo")} className="px-6 py-4">
+    <form onSubmit={(e) => handleSubmit(e, 'photo')} className="px-6 py-4">
       <div className={`mb-4 ${gradientBg} rounded-lg p-4 relative`}>
         <label className=" text-gray-700 text-sm font-bold mb-2 flex items-center justify-between">
           <span className="flex items-center text-white">
             <Icon className="mr-2 text-white" />
           </span>
-          {editField !== "photo" && (
+          {editField !== 'photo' && (
             <button
               type="button"
-              onClick={() => handleEdit("photo")}
+              onClick={() => handleEdit('photo')}
               className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white py-1 px-3 rounded-full shadow-md transition duration-300 disabled:opacity-50"
-              style={{ minWidth: "100px", zIndex: 10 }}
+              style={{ minWidth: '100px', zIndex: 10 }}
             >
               Change Photo
             </button>
@@ -56,7 +55,7 @@ const UserProfilePhoto: React.FC<UserProfilePhotoProps> = ({
             className="h-32 w-32 rounded-full mx-auto mt-4"
           />
         </div>
-        {editField === "photo" && (
+        {editField === 'photo' && (
           <>
             <input
               type="file"
@@ -67,7 +66,7 @@ const UserProfilePhoto: React.FC<UserProfilePhotoProps> = ({
             <button
               type="submit"
               className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white py-1 px-3 mt-2 rounded-full shadow-md transition duration-300 disabled:opacity-50"
-              style={{ minWidth: "100px", zIndex: 10 }}
+              style={{ minWidth: '100px', zIndex: 10 }}
             >
               Save
             </button>
@@ -75,7 +74,7 @@ const UserProfilePhoto: React.FC<UserProfilePhotoProps> = ({
         )}
       </div>
     </form>
-  );
-};
+  )
+}
 
-export default UserProfilePhoto;
+export default UserProfilePhoto
