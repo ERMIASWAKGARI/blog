@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import { MdEmail, MdLock, MdPerson } from 'react-icons/md'
 import { BsFillImageFill } from 'react-icons/bs'
-import LoadingSpinner from './LoadingSpinner'
-import SuccessMessage from '../Profile/UserProfile/SuccessMessage'
+import { MdEmail, MdLock, MdPerson } from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
 import ErrorMessage from '../Profile/UserProfile/ErrorMessage'
-import SocialMediaIcons from './SocialMediaIcons'
+import SuccessMessage from '../Profile/UserProfile/SuccessMessage'
+import LoadingSpinner from './LoadingSpinner'
 
 import api from '../../axiosConfig'
 
