@@ -237,107 +237,111 @@ const UserProfile: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-50 to-blue-100">
       <NavbarLoggedIn />
-      {loading && <LoadingSpinner loading={loading} />}
-
-      <div className="container mx-auto px-4 py-8 lg:px-8 flex flex-col lg:flex-row gap-8">
-        <div className="max-w-md">
-          <div className="bg-white rounded-lg overflow-hidden shadow-lg border border-gray-300">
-            <h2 className="text-3xl font-bold px-6 py-4 bg-gray-100 border-b border-gray-300">
-              User Information
-            </h2>
-            <div className="px-4 py-2">
-              <UserProfilePhoto
-                currentUser={currentUser}
-                editField={editField}
-                handleEdit={handleEdit}
-                handlePhotoChange={handlePhotoChange}
-                handleSubmit={handleSubmit}
-                icon={FaCamera}
-              />
-
-              <UserProfileField
-                label="Name"
-                field="name"
-                type="text"
-                icon={FaUser}
-                currentUser={currentUser}
-                editField={editField}
-                formData={formData}
-                handleChange={handleChange}
-                handleSubmit={handleSubmit}
-                handleEdit={handleEdit}
-                error={null}
-              />
-              <UserProfileField
-                label="Email"
-                field="email"
-                type="email"
-                icon={FaEnvelope}
-                currentUser={currentUser}
-                editField={editField}
-                formData={formData}
-                handleChange={handleChange}
-                handleSubmit={handleSubmit}
-                handleEdit={handleEdit}
-                error={null}
-              />
-              {editField === 'password' ? (
-                <PasswordChangeForm
+      {loading ? (
+        <LoadingSpinner loading={loading} />
+      ) : (
+        <div className="container mx-auto px-4 py-8 lg:px-8 flex flex-col lg:flex-row gap-8">
+          <div className="max-w-md">
+            <div className="bg-white rounded-lg overflow-hidden shadow-lg border border-gray-300">
+              <h2 className="text-3xl font-bold px-6 py-4 bg-gray-100 border-b border-gray-300">
+                User Information
+              </h2>
+              <div className="px-4 py-2">
+                <UserProfilePhoto
                   currentUser={currentUser}
                   editField={editField}
                   handleEdit={handleEdit}
-                  handleChange={handleChange}
+                  handlePhotoChange={handlePhotoChange}
                   handleSubmit={handleSubmit}
-                  formData={
-                    formData as {
-                      oldPassword: string
-                      newPassword: string
-                      passwordConfirm: string
-                    }
-                  }
-                  fieldErrors={fieldErrors}
+                  icon={FaCamera}
                 />
-              ) : (
+
                 <UserProfileField
-                  label="Password"
-                  field="password"
-                  type="password"
-                  icon={FaLock}
+                  label="Name"
+                  field="name"
+                  type="text"
+                  icon={FaUser}
                   currentUser={currentUser}
                   editField={editField}
                   formData={formData}
                   handleChange={handleChange}
                   handleSubmit={handleSubmit}
                   handleEdit={handleEdit}
-                  error={fieldErrors.newPassword || fieldErrors.passwordConfirm}
+                  error={null}
                 />
-              )}
-              <div className="mt-4">
-                <button
-                  onClick={() => setShowDeleteModal(true)}
-                  className="w-full bg-red-500 text-white py-2 px-4 rounded-full hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
-                >
-                  Delete Account
-                </button>
+                <UserProfileField
+                  label="Email"
+                  field="email"
+                  type="email"
+                  icon={FaEnvelope}
+                  currentUser={currentUser}
+                  editField={editField}
+                  formData={formData}
+                  handleChange={handleChange}
+                  handleSubmit={handleSubmit}
+                  handleEdit={handleEdit}
+                  error={null}
+                />
+                {editField === 'password' ? (
+                  <PasswordChangeForm
+                    currentUser={currentUser}
+                    editField={editField}
+                    handleEdit={handleEdit}
+                    handleChange={handleChange}
+                    handleSubmit={handleSubmit}
+                    formData={
+                      formData as {
+                        oldPassword: string
+                        newPassword: string
+                        passwordConfirm: string
+                      }
+                    }
+                    fieldErrors={fieldErrors}
+                  />
+                ) : (
+                  <UserProfileField
+                    label="Password"
+                    field="password"
+                    type="password"
+                    icon={FaLock}
+                    currentUser={currentUser}
+                    editField={editField}
+                    formData={formData}
+                    handleChange={handleChange}
+                    handleSubmit={handleSubmit}
+                    handleEdit={handleEdit}
+                    error={
+                      fieldErrors.newPassword || fieldErrors.passwordConfirm
+                    }
+                  />
+                )}
+                <div className="mt-4">
+                  <button
+                    onClick={() => setShowDeleteModal(true)}
+                    className="w-full bg-red-500 text-white py-2 px-4 rounded-full hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+                  >
+                    Delete Account
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="flex-1">
-          <h2 className="text-3xl font-bold mb-8 text-center lg:text-left text-gray-800">
-            User Posts
-          </h2>
-          <div className="bg-white rounded-lg overflow-hidden shadow-lg border border-gray-300">
-            {successMessage && (
-              <SuccessMessage
-                message={successMessage}
-                onClose={() => setSuccessMessage(null)}
-              />
-            )}
-            <UserPosts posts={posts} setPosts={setPosts} />
+          <div className="flex-1">
+            <h2 className="text-3xl font-bold mb-8 text-center lg:text-left text-gray-800">
+              User Posts
+            </h2>
+            <div className="bg-white rounded-lg overflow-hidden shadow-lg border border-gray-300">
+              {successMessage && (
+                <SuccessMessage
+                  message={successMessage}
+                  onClose={() => setSuccessMessage(null)}
+                />
+              )}
+              <UserPosts posts={posts} setPosts={setPosts} />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {showDeleteModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
