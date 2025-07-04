@@ -7,8 +7,6 @@ const Post = require('../models/postModel')
 const asyncWrapper = require('../utils/asyncWrapper')
 
 exports.addPost = asyncWrapper(async (req, res, next) => {
-  console.log('Incoming files:', req.files)
-
   const files = req.files
 
   if (files?.image && files.image.length > 0) {

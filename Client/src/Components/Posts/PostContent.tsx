@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
+import { BsStar, BsStarFill, BsStarHalf } from 'react-icons/bs'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 import { Carousel } from 'react-responsive-carousel'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
-import { FaEdit, FaTrash } from 'react-icons/fa'
-import { BsStarFill, BsStarHalf, BsStar } from 'react-icons/bs'
 import { BASE_URL } from '../../config'
 
 export interface Post {
@@ -97,7 +97,7 @@ const PostContent: React.FC<PostContentProps> = ({
         <div className="relative w-full h-80 mb-4">
           {post.imagePath && (
             <img
-              src={`${BASE_URL}/${post.imagePath}`}
+              src={post.imagePath}
               alt={post.title}
               className="absolute inset-0 w-full h-full object-contain rounded-lg shadow-lg"
             />
