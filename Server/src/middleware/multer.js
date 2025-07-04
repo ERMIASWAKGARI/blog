@@ -7,6 +7,11 @@ const storage = new CloudinaryStorage({
   params: async (req, file) => {
     let folder = 'blog_uploads'
 
+    // If this is a profile photo, change the folder
+    if (file.fieldname === 'photo') {
+      folder = 'user_profiles'
+    }
+
     return {
       folder,
       resource_type: file.mimetype.startsWith('video') ? 'video' : 'image',

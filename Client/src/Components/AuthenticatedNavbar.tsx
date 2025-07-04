@@ -1,64 +1,63 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { FaSignOutAlt } from "react-icons/fa";
+import React, { useEffect, useState } from 'react'
+import { FaSignOutAlt } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
 
-import { useUser } from "../UserContext";
+import { useUser } from '../UserContext'
 
-import logo from "../../public/DLogo.png";
-import maleDefault from "../../public/john_doe.png";
-import femaleDefault from "../../public/jane_smith.png";
-import { BASE_URL } from "../config";
+import logo from '../../public/DLogo.png'
+import femaleDefault from '../../public/jane_smith.png'
+import maleDefault from '../../public/john_doe.png'
 
 interface NavLinkProps {
-  to: string;
-  onClick?: () => void;
-  className?: string;
-  children: React.ReactNode;
+  to: string
+  onClick?: () => void
+  className?: string
+  children: React.ReactNode
 }
 
 const NavbarLoggedIn: React.FC = () => {
-  const { user, setUser } = useUser();
-  const [isSticky, setIsSticky] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, setUser } = useUser()
+  const [isSticky, setIsSticky] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.pageYOffset;
-      setIsSticky(scrollTop > 0);
-    };
+      const scrollTop = window.pageYOffset
+      setIsSticky(scrollTop > 0)
+    }
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll)
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
 
   const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
+    setIsDropdownOpen(!isDropdownOpen)
+  }
 
   const closeDropdown = () => {
-    setIsDropdownOpen(false);
-  };
+    setIsDropdownOpen(false)
+  }
 
   const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("user");
-  };
+    setUser(null)
+    localStorage.removeItem('authToken')
+    localStorage.removeItem('user')
+  }
 
   const photoSrc = user?.photo
-    ? `${BASE_URL}/${user.photo}`
-    : user?.gender === "female"
+    ? `${user.photo}`
+    : user?.gender === 'female'
     ? femaleDefault
-    : maleDefault;
+    : maleDefault
 
   return (
     <nav
       className={`bg-blue-50 p-4 z-50 ${
-        isSticky ? "fixed top-0 left-0 right-0" : ""
+        isSticky ? 'fixed top-0 left-0 right-0' : ''
       }`}
     >
       <div className="container mx-auto flex justify-between items-center relative z-10">
@@ -67,11 +66,11 @@ const NavbarLoggedIn: React.FC = () => {
             src={logo}
             alt="Company Logo"
             className="h-8 md:h-10 p-1 rounded-full shadow-md"
-            style={{ backgroundColor: "#FFFFFF" }}
+            style={{ backgroundColor: '#FFFFFF' }}
           />
           <span
             className={`text-2xl font-bold ml-2 text-black`}
-            style={{ fontFamily: "MuseoModerno, sans-serif", color: "#000" }}
+            style={{ fontFamily: 'MuseoModerno, sans-serif', color: '#000' }}
           >
             Debbal Tech Gazette
           </span>
@@ -103,7 +102,7 @@ const NavbarLoggedIn: React.FC = () => {
           </div>
           <div
             className={`${
-              isMobileMenuOpen ? "block" : "hidden"
+              isMobileMenuOpen ? 'block' : 'hidden'
             } md:hidden absolute top-16 left-0 right-0 bg-blue-50 z-50`}
           >
             <div className="flex flex-col items-center space-y-2 py-4">
@@ -128,15 +127,15 @@ const NavbarLoggedIn: React.FC = () => {
                 alt="User Avatar"
                 className="h-8 w-8 rounded-full mr-2"
               />
-              <span className="text-base">{user?.name || "User"}</span>
+              <span className="text-base">{user?.name || 'User'}</span>
             </button>
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-blue-100 rounded-full shadow-lg z-50">
                 <NavLink
                   to="/"
                   onClick={() => {
-                    handleLogout();
-                    closeDropdown();
+                    handleLogout()
+                    closeDropdown()
                   }}
                   className="flex items-center px-2 py-2 hover:bg-blue-200 transition duration-300"
                 >
@@ -151,8 +150,8 @@ const NavbarLoggedIn: React.FC = () => {
         </div>
       </div>
     </nav>
-  );
-};
+  )
+}
 
 const NavLink: React.FC<NavLinkProps> = ({ to, onClick, children }) => (
   <Link
@@ -162,6 +161,6 @@ const NavLink: React.FC<NavLinkProps> = ({ to, onClick, children }) => (
   >
     {children}
   </Link>
-);
+)
 
-export default NavbarLoggedIn;
+export default NavbarLoggedIn

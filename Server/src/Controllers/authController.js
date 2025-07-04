@@ -32,8 +32,9 @@ exports.signup = asyncWrapper(async (req, res, next) => {
   try {
     const newUser = await User.create({
       ...req.body,
-      photo: req.file?.path.replace(path.join(__dirname, '../../public'), ''),
+      photo: req.file?.path || req.file?.secure_url || req.file?.url,
     })
+
     createSendToken(newUser, 201, res)
   } catch (error) {
     if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {

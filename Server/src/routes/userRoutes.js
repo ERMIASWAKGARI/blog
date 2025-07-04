@@ -17,8 +17,8 @@ const {
   protect,
   updatePassword,
   restrictTo,
-  upload,
 } = require('../Controllers/authController')
+const fileUpload = require('../middleware/multer')
 
 const {
   getMe,
@@ -34,7 +34,7 @@ const router = express.Router()
 
 router.use('/:userId/post', postRouter)
 
-router.post('/signup', upload.single('photo'), signup)
+router.post('/signup', fileUpload.single('photo'), signup)
 router.post('/login', login)
 router.post('/forgotpassword', forgotPassword)
 router.patch('/resetpassword/:token', resetPassword)
