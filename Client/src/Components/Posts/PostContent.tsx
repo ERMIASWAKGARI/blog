@@ -84,10 +84,7 @@ const PostContent: React.FC<PostContentProps> = ({
                 className="absolute inset-0 w-full h-full object-contain rounded-lg mb-4 shadow-lg"
                 style={{ outline: 'none' }}
               >
-                <source
-                  src={`${BASE_URL}/${post.videoContent}`}
-                  type="video/mp4"
-                />
+                <source src={post.videoContent} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             </div>
@@ -108,10 +105,7 @@ const PostContent: React.FC<PostContentProps> = ({
               className="absolute inset-0 w-full h-full object-contain rounded-lg mb-4 shadow-lg"
               style={{ outline: 'none' }}
             >
-              <source
-                src={`${BASE_URL}/${post.videoContent}`}
-                type="video/mp4"
-              />
+              <source src={post.videoContent} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           )}
@@ -121,7 +115,7 @@ const PostContent: React.FC<PostContentProps> = ({
       <div className="flex items-center justify-between border-t pt-4 mt-4">
         <div className="flex items-center">
           <img
-            src={`${BASE_URL}/${post.authorImage}`}
+            src={post.authorImage}
             alt={post.author}
             className="h-10 w-10 rounded-full object-cover mr-2"
           />
