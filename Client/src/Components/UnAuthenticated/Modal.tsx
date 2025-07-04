@@ -9,7 +9,6 @@ import {
   FaTimes,
   FaUser,
 } from 'react-icons/fa'
-import { BASE_URL } from '../../config'
 
 interface Post {
   _id: string
@@ -74,13 +73,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, post }) => {
             <>
               {mediaItems[currentIndex].type === 'image' ? (
                 <img
-                  src={`${BASE_URL}/${mediaItems[currentIndex].src}`}
+                  src={mediaItems[currentIndex].src}
                   alt={post.title}
                   className="w-full h-full object-contain"
                 />
               ) : (
                 <video
-                  src={`${BASE_URL}/${mediaItems[currentIndex].src}`}
+                  src={mediaItems[currentIndex].src}
                   controls
                   className="w-full h-full object-contain"
                 />
