@@ -1,62 +1,61 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Link, useNavigate } from "react-router-dom";
-import React, { useState } from "react";
-import { MdEmail, MdLock } from "react-icons/md";
-import LoadingSpinner from "./LoadingSpinner";
-import { useUser } from "../../UserContext";
-import SuccessMessage from "../Profile/UserProfile/SuccessMessage";
-import ErrorMessage from "../Profile/UserProfile/ErrorMessage";
-import SocialMediaIcons from "./SocialMediaIcons";
+import React, { useState } from 'react'
+import { MdEmail, MdLock } from 'react-icons/md'
+import { Link, useNavigate } from 'react-router-dom'
+import { useUser } from '../../UserContext'
+import ErrorMessage from '../Profile/UserProfile/ErrorMessage'
+import SuccessMessage from '../Profile/UserProfile/SuccessMessage'
+import LoadingSpinner from './LoadingSpinner'
 
-import api from "../../axiosConfig";
+import api from '../../axiosConfig'
 
 const Login: React.FC = () => {
-  const { setUser } = useUser();
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [result, setResult] = useState<any>(null);
-  const [error, setError] = useState<any>(false);
-  const [loading, setLoading] = useState(false);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const navigate = useNavigate();
+  const { setUser } = useUser()
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [result, setResult] = useState<any>(null)
+  const [error, setError] = useState<any>(false)
+  const [loading, setLoading] = useState(false)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+  const [showErrorMessage, setShowErrorMessage] = useState(false)
+  const navigate = useNavigate()
 
   async function formSubmitHandler(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setLoading(true);
+    event.preventDefault()
+    setLoading(true)
     try {
       const userCredential = await api.post(`/users/login`, {
         email,
         password,
-      });
+      })
 
-      console.log(userCredential);
+      console.log(userCredential)
 
       if (userCredential) {
-        setError("");
-        setShowErrorMessage(false);
-        setResult("Congratulations! Successfully logged in.");
-        localStorage.setItem("authToken", userCredential.data.token);
-        const userData = userCredential.data.data.user;
-        setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData));
-        setShowSuccessMessage(true);
-        setTimeout(() => navigate("/home"), 2000);
+        setError('')
+        setShowErrorMessage(false)
+        setResult('Congratulations! Successfully logged in.')
+        localStorage.setItem('authToken', userCredential.data.token)
+        const userData = userCredential.data.data.user
+        setUser(userData)
+        localStorage.setItem('user', JSON.stringify(userData))
+        setShowSuccessMessage(true)
+        setTimeout(() => navigate('/home'), 2000)
       }
     } catch (error: any) {
-      setShowSuccessMessage(false);
+      setShowSuccessMessage(false)
       if (
         error.response &&
         error.response.data &&
         error.response.data.message
       ) {
-        setError(error.response.data.message);
+        setError(error.response.data.message)
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        setError('An unexpected error occurred. Please try again.')
       }
-      setShowErrorMessage(true);
+      setShowErrorMessage(true)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -125,14 +124,11 @@ const Login: React.FC = () => {
             </div>
             <hr className="my-4" />
             <div className="text-center">or SIGNUP VIA: </div>
-            <div className="bg-gray-800 py-2 px-4 rounded-full">
-              <SocialMediaIcons />
-            </div>
           </form>
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login
