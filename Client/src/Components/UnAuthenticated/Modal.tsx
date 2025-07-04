@@ -59,9 +59,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, post }) => {
   }
 
   return isOpen ? (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-lg overflow-hidden animate-fade-in-up">
-        {/* Close Button */}
+    <div className="fixed inset-0 z-50 flex justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+      <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-lg animate-fade-in-up max-h-screen overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-red-500 z-10"

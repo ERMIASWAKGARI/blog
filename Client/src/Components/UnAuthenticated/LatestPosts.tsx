@@ -138,7 +138,10 @@ const LatestPosts: React.FC = () => {
                     <div className="relative h-52 overflow-hidden">
                       {post.imagePath && !post.videoContent && (
                         <img
-                          src={`${BASE_URL}/${post.imagePath}`}
+                          src={`${BASE_URL}/${post.imagePath.replace(
+                            /^\/+/,
+                            ''
+                          )}`}
                           alt={post.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />

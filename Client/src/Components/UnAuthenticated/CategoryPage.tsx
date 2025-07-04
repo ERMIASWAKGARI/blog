@@ -1,155 +1,144 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa";
-import Modal from "./Modal";
-import Navbar from "./Navbar";
-
-import { BASE_URL } from "../../config";
-import api from "../../axiosConfig";
+import React, { useEffect, useState } from 'react'
+import { FaArrowLeft } from 'react-icons/fa'
+import { useNavigate, useParams } from 'react-router-dom'
+import api from '../../axiosConfig'
+import { BASE_URL } from '../../config'
+import Modal from './Modal'
+import Navbar from './Navbar'
 
 interface Post {
-  _id: string;
-  title: string;
-  textContent: string;
-  imagePath: string;
-  postedAt: string;
-  createdAt: string;
-  category: string;
-  author: string;
-  authorImage: string;
-  ratingQuantity: number;
-  averageRating: number;
+  _id: string
+  title: string
+  textContent: string
+  imagePath: string
+  postedAt: string
+  createdAt: string
+  category: string
+  author: string
+  authorImage: string
+  ratingQuantity: number
+  averageRating: number
 }
 
 const CategoryPage: React.FC = () => {
-  const { category } = useParams<{ category: string }>();
-  const navigate = useNavigate();
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [hasMore, setHasMore] = useState<boolean>(true);
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const limit = 6;
+  const { category } = useParams<{ category: string }>()
+  const navigate = useNavigate()
+  const [posts, setPosts] = useState<Post[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [hasMore, setHasMore] = useState<boolean>(true)
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null)
+  const limit = 6
 
   useEffect(() => {
     const fetchPosts = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
         const response = await api.get(
           `/post/getAllposts?category=${category}&limit=${limit}&page=${currentPage}`
-        );
-        const data = await response.data;
-        console.log(data);
+        )
+        const data = await response.data
+
         if (response.status === 200) {
-          const newPosts = data.data;
+          const newPosts = data.data
           if (Array.isArray(newPosts)) {
             setPosts((prevPosts = []) => {
               const uniquePosts = newPosts.filter(
                 (newPost) => !prevPosts.some((post) => post._id === newPost._id)
-              );
-              return [...prevPosts, ...uniquePosts];
-            });
-            setHasMore(newPosts.length === limit);
-          } else {
-            console.error("Invalid data format received:", newPosts);
+              )
+              return [...prevPosts, ...uniquePosts]
+            })
+            setHasMore(newPosts.length === limit)
           }
-        } else {
-          console.error("Error fetching posts:", data.message);
         }
       } catch (error) {
-        console.error("Error fetching posts:", error);
+        console.error('Error fetching posts:', error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchPosts();
-  }, [category, currentPage]);
+    fetchPosts()
+  }, [category, currentPage])
 
   const handleLoadMore = () => {
     if (hasMore) {
-      setCurrentPage((prevPage) => prevPage + 1);
+      setCurrentPage((prevPage) => prevPage + 1)
     }
-  };
+  }
 
-  const handlePostClick = (post: Post) => {
-    setSelectedPost(post);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedPost(null);
-  };
+  const handlePostClick = (post: Post) => setSelectedPost(post)
+  const handleCloseModal = () => setSelectedPost(null)
 
   return (
     <>
       <Navbar />
-      <section
-        id="category-posts"
-        className="py-16 bg-gray-100 text-black mt-6"
-      >
-        <div className="container mx-auto px-4">
+      <section className="py-32 bg-gradient-to-br from-gray-50 to-gray-100 text-black min-h-screen">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8">
           <button
-            className="flex items-center text-blue-500 hover:underline mb-8"
+            className="flex items-center text-blue-600 hover:text-blue-800 font-medium transition mb-6"
             onClick={() => navigate(-1)}
           >
             <FaArrowLeft className="mr-2" />
             Back
           </button>
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Posts in {category}
+
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-center text-gray-800 mb-12 uppercase tracking-wide">
+            {category} Posts
           </h2>
+
           {loading && currentPage === 1 ? (
-            <p className="text-center text-gray-500">Loading posts...</p>
+            <div className="flex justify-center items-center h-40">
+              <span className="text-gray-500 text-lg">Loading posts...</span>
+            </div>
+          ) : posts.length === 0 ? (
+            <div className="flex justify-center items-center h-40">
+              <p className="text-gray-500 text-lg">No posts available.</p>
+            </div>
           ) : (
             <>
-              <div className="grid md:grid-cols-3 gap-8">
-                {posts.length === 0 ? (
-                  <p className="text-center text-gray-500">
-                    No posts available.
-                  </p>
-                ) : (
-                  posts.map((post) => (
-                    <div
-                      key={post._id}
-                      className="bg-white p-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:shadow-xl hover:-translate-y-1 cursor-pointer"
-                      onClick={() => handlePostClick(post)}
-                    >
-                      <img
-                        src={`${BASE_URL}/${post.imagePath}`}
-                        alt={post.title}
-                        className="w-full h-40 object-cover rounded-t-lg mb-4"
-                      />
-                      <h3 className="text-xl font-bold mb-2">{post.title}</h3>
-                      <p className="text-gray-700">
+              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                {posts.map((post) => (
+                  <div
+                    key={post._id}
+                    onClick={() => handlePostClick(post)}
+                    className="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer group overflow-hidden"
+                  >
+                    <img
+                      src={`${BASE_URL}/${post.imagePath}`}
+                      alt={post.title}
+                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="p-5">
+                      <h3 className="text-xl font-semibold mb-2 text-gray-800 line-clamp-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                         {post.textContent.substring(0, 100)}...
                       </p>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handlePostClick(post);
-                        }}
-                        className="text-blue-500 hover:underline mt-4 block hover:text-blue-600"
-                      >
-                        Read more
-                      </button>
+                      <span className="text-sm text-blue-500 font-medium hover:underline">
+                        Read more →
+                      </span>
                     </div>
-                  ))
-                )}
+                  </div>
+                ))}
               </div>
+
               {hasMore && (
-                <div className="flex justify-center mt-6">
+                <div className="flex justify-center mt-12">
                   <button
                     onClick={handleLoadMore}
-                    className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white py-2 px-6 rounded-full shadow-md transition duration-300 disabled:opacity-50"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-full shadow-md transition-transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={loading}
                   >
-                    {loading ? "Loading..." : "See More"}
+                    {loading ? 'Loading...' : 'See More'}
                   </button>
                 </div>
               )}
             </>
           )}
         </div>
+
         <Modal
           isOpen={!!selectedPost}
           onClose={handleCloseModal}
@@ -157,7 +146,7 @@ const CategoryPage: React.FC = () => {
         />
       </section>
     </>
-  );
-};
+  )
+}
 
-export default CategoryPage;
+export default CategoryPage
