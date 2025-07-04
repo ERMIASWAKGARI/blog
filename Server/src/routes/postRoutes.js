@@ -10,6 +10,7 @@ const {
   updatePost,
 } = require('../Controllers/PostsController')
 const { protect, upload } = require('../Controllers/authController')
+const fileUpload = require('../middleware/multer')
 
 const router = express.Router({ mergeParams: true })
 
@@ -18,7 +19,7 @@ router.use('/:postId/rating', ratingRoute)
 router.post(
   '/addPost',
   protect,
-  upload.fields([
+  fileUpload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'video', maxCount: 1 },
   ]),

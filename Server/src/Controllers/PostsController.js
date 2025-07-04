@@ -6,25 +6,15 @@ const AppError = require('../utils/appError')
 const Post = require('../models/postModel')
 const asyncWrapper = require('../utils/asyncWrapper')
 
-const app = express()
-
 exports.addPost = asyncWrapper(async (req, res, next) => {
   const files = req.files
 
   if (files?.image && files.image.length > 0) {
-    const imagePath = files.image[0].path.replace(
-      path.join(__dirname, '../../public'),
-      ''
-    )
-    req.body.imagePath = imagePath
+    req.body.imagePath = files.image[0].path
   }
 
   if (files?.video && files.video.length > 0) {
-    const videoPath = files.video[0].path.replace(
-      path.join(__dirname, '../../public'),
-      ''
-    )
-    req.body.videoContent = videoPath
+    req.body.videoContent = files.video[0].path
   }
 
   req.body.author = req.user.name
