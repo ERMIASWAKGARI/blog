@@ -237,9 +237,10 @@ const UserProfile: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-50 to-blue-100">
       <NavbarLoggedIn />
+      {loading && <LoadingSpinner loading={loading} />}
+
       <div className="container mx-auto px-4 py-8 lg:px-8 flex flex-col lg:flex-row gap-8">
         <div className="max-w-md">
-          {loading && <LoadingSpinner loading={loading} />}
           <div className="bg-white rounded-lg overflow-hidden shadow-lg border border-gray-300">
             <h2 className="text-3xl font-bold px-6 py-4 bg-gray-100 border-b border-gray-300">
               User Information
