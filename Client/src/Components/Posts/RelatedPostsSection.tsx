@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import moment from 'moment'
-import { Post } from '../../Pages/PostDetail'
+import React, { useEffect, useState } from 'react'
 import { BsArrowRight } from 'react-icons/bs'
-
-import { BASE_URL } from '../../config'
+import { Link } from 'react-router-dom'
+import { Post } from '../../Pages/PostDetail'
 
 interface RelatedPostsProps {
   relatedPosts: Post[]
@@ -39,7 +37,7 @@ const RelatedPostsSection: React.FC<RelatedPostsProps> = ({ relatedPosts }) => {
           <div key={relatedPost._id} className="mb-4 flex">
             {relatedPost.imagePath && (
               <img
-                src={`${BASE_URL}/${relatedPost.imagePath}`}
+                src={relatedPost.imagePath}
                 alt={relatedPost.title}
                 className="h-20 w-20 object-cover rounded-lg mr-4"
               />
