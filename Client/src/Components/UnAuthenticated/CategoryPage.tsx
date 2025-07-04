@@ -90,7 +90,7 @@ const CategoryPage: React.FC = () => {
           {loading && currentPage === 1 ? (
             <LoadingSpinner loading={loading} />
           ) : posts.length === 0 ? (
-            <div className="flex justify-center items-center h-40">
+            <div className="flex justify-center items-center">
               <p className="text-gray-500 text-lg">No posts available.</p>
             </div>
           ) : (
