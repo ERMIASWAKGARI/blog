@@ -12,7 +12,6 @@ import MediaPopup from './PostCard/MediaPopup'
 import PostHeader from './PostCard/PostHeader'
 
 import generic_image from '../../public/generic_user_place_holder.jpg'
-import { BASE_URL } from '../config'
 
 interface Post {
   _id: string
@@ -41,12 +40,10 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
   const popupRef = useRef<HTMLDivElement>(null)
 
-  const normalizePath = (path: string | undefined) => path?.replace(/\\/g, '/')
-
   const mediaItems = [
-    { type: 'image', url: `${BASE_URL}${normalizePath(post.imagePath)}` },
-    { type: 'video', url: `${BASE_URL}${normalizePath(post.videoContent)}` },
-  ].filter((m) => m.url && m.url !== `${BASE_URL}undefined`)
+    { type: 'image', url: post.imagePath },
+    { type: 'video', url: post.videoContent },
+  ]
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -94,7 +91,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             title={post.title}
             onClick={() =>
               openMediaPopup(
-                mediaItems[currentMediaIndex].url,
+                mediaItems[currentMediaIndex].url ?? '',
                 mediaItems[currentMediaIndex].type
               )
             }
