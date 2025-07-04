@@ -1,124 +1,123 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import Navbar from "../Components/AuthenticatedNavbar";
-import { useUser } from "../UserContext";
-import { FaArrowLeft, FaEdit, FaTrash, FaArrowRight } from "react-icons/fa";
-import SuccessMessage from "../Components/Profile/UserProfile/SuccessMessage";
-import RelatedPostsSection from "../Components/Posts/RelatedPostsSection";
-import Rating from "../Components/Posts/Rating";
-import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
+import React, { useEffect, useState } from 'react'
+import { FaArrowLeft, FaArrowRight, FaEdit, FaTrash } from 'react-icons/fa'
+import Carousel from 'react-multi-carousel'
+import 'react-multi-carousel/lib/styles.css'
+import { useNavigate, useParams } from 'react-router-dom'
+import Navbar from '../Components/AuthenticatedNavbar'
+import Rating from '../Components/Posts/Rating'
+import RelatedPostsSection from '../Components/Posts/RelatedPostsSection'
+import SuccessMessage from '../Components/Profile/UserProfile/SuccessMessage'
+import { useUser } from '../UserContext'
 
-import generic_image from "../../public/generic_user_place_holder.jpg";
-import { BASE_URL } from "../config";
-import api from "../axiosConfig";
+import generic_image from '../../public/generic_user_place_holder.jpg'
+import api from '../axiosConfig'
 
 export interface Post {
-  _id: string;
-  title: string;
-  author: string;
-  textContent: string;
-  imagePath?: string;
-  createdAt: string;
-  category: string;
-  authorImage: string;
-  ratingQuantity: number;
-  averageRating: number;
-  videoContent?: string;
+  _id: string
+  title: string
+  author: string
+  textContent: string
+  imagePath?: string
+  createdAt: string
+  category: string
+  authorImage: string
+  ratingQuantity: number
+  averageRating: number
+  videoContent?: string
 }
 
 const PostDetail: React.FC = () => {
-  const { postId } = useParams<{ postId: string }>();
-  const [post, setPost] = useState<Post | null>(null);
-  const [relatedPosts, setRelatedPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { user } = useUser();
-  const navigate = useNavigate();
-  const [postToDelete, setPostToDelete] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [mediaType, setMediaType] = useState<"image" | "video" | null>("image");
+  const { postId } = useParams<{ postId: string }>()
+  const [post, setPost] = useState<Post | null>(null)
+  const [relatedPosts, setRelatedPosts] = useState<Post[]>([])
+  const [loading, setLoading] = useState(true)
+  const { user } = useUser()
+  const navigate = useNavigate()
+  const [postToDelete, setPostToDelete] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [mediaType, setMediaType] = useState<'image' | 'video' | null>('image')
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await api.get(`/post/getPost/${postId}`);
+        const response = await api.get(`/post/getPost/${postId}`)
 
-        setPost(response.data.data.post);
-        fetchRelatedPosts(response.data.data.post.category);
+        setPost(response.data.data.post)
+        fetchRelatedPosts(response.data.data.post.category)
 
-        window.scrollTo(0, 0);
+        window.scrollTo(0, 0)
       } catch (error) {
-        console.error("Error fetching post:", error);
+        console.error('Error fetching post:', error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
     const fetchRelatedPosts = async (category: string) => {
       try {
-        let url = `/post/getAllposts`;
-        if (category && category !== "All") {
-          url += `?category=${category}`;
+        let url = `/post/getAllposts`
+        if (category && category !== 'All') {
+          url += `?category=${category}`
         }
 
-        const response = await api.get(url);
-        const data = await response.data;
+        const response = await api.get(url)
+        const data = await response.data
 
         if (response.status === 200) {
-          setRelatedPosts(data.data);
+          setRelatedPosts(data.data)
         } else {
-          console.error("Error fetching related posts:", data.message);
+          console.error('Error fetching related posts:', data.message)
         }
       } catch (error) {
-        console.error("Error fetching related posts:", error);
+        console.error('Error fetching related posts:', error)
       }
-    };
+    }
 
-    fetchPost();
-  }, [postId]);
+    fetchPost()
+  }, [postId])
 
   const handleEdit = (postId: string) => {
-    navigate(`/profile/editPost/${postId}`);
-  };
+    navigate(`/profile/editPost/${postId}`)
+  }
 
   const handleDelete = async (postId: string) => {
     try {
-      await api.delete(`/post/deletePost/${postId}`);
+      await api.delete(`/post/deletePost/${postId}`)
 
-      setPostToDelete(null);
-      setSuccessMessage("Post deleted successfully!");
+      setPostToDelete(null)
+      setSuccessMessage('Post deleted successfully!')
       setTimeout(() => {
-        navigate(-1);
-      }, 3000);
+        navigate(-1)
+      }, 3000)
     } catch (error) {
-      console.error("Error deleting post:", error);
+      console.error('Error deleting post:', error)
     }
-  };
+  }
 
-  const isAuthor = user && user.name === post?.author;
+  const isAuthor = user && user.name === post?.author
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   if (!post) {
-    return <div>Post not found</div>;
+    return <div>Post not found</div>
   }
 
-  const images = post.imagePath ? post.imagePath.split(",") : [];
-  const videos = post.videoContent ? post.videoContent.split(",") : [];
-  const hasImages = images.length > 0;
-  const hasVideos = videos.length > 0;
+  const images = post.imagePath ? post.imagePath.split(',') : []
+  const videos = post.videoContent ? post.videoContent.split(',') : []
+  const hasImages = images.length > 0
+  const hasVideos = videos.length > 0
 
-  const useGallery = hasImages || hasVideos;
+  const useGallery = hasImages || hasVideos
 
   const toggleMediaType = () => {
-    setMediaType((prevType) => (prevType === "image" ? "video" : "image"));
-  };
+    setMediaType((prevType) => (prevType === 'image' ? 'video' : 'image'))
+  }
 
   const paragraphs = post.textContent
-    .split("\n")
-    .filter((paragraph) => paragraph.trim() !== "");
+    .split('\n')
+    .filter((paragraph) => paragraph.trim() !== '')
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -157,7 +156,7 @@ const PostDetail: React.FC = () => {
           <div className="mb-4 relative">
             {useGallery && (
               <>
-                {mediaType === "image" && hasImages && (
+                {mediaType === 'image' && hasImages && (
                   <Carousel
                     additionalTransfrom={0}
                     arrows={false}
@@ -186,16 +185,16 @@ const PostDetail: React.FC = () => {
                     {images.map((image, index) => (
                       <img
                         key={index}
-                        src={`${BASE_URL}/${image}`}
+                        src={image}
                         alt={`Post image ${index + 1}`}
                         className="w-full h-auto rounded-lg shadow-md"
                       />
                     ))}
                   </Carousel>
                 )}
-                {mediaType === "video" && hasVideos && (
+                {mediaType === 'video' && hasVideos && (
                   <video
-                    src={`${BASE_URL}/${videos[0]}`}
+                    src={videos[0]}
                     controls
                     className="w-full h-auto rounded-lg shadow-md"
                   />
@@ -205,7 +204,7 @@ const PostDetail: React.FC = () => {
                     className="absolute top-0 right-0 transform -translate-y-1/2 translate-x-1/2 bg-white bg-opacity-50 p-2 rounded-full"
                     onClick={toggleMediaType}
                   >
-                    {mediaType === "image" ? (
+                    {mediaType === 'image' ? (
                       <FaArrowRight className="text-gray-600" />
                     ) : (
                       <FaArrowLeft className="text-gray-600" />
@@ -285,7 +284,7 @@ const PostDetail: React.FC = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default PostDetail;
+export default PostDetail
