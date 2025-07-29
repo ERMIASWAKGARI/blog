@@ -157,15 +157,6 @@ const PostsView: React.FC = () => {
                       className="w-full h-48 object-cover"
                       onClick={() => handlePostClick(post)}
                     />
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        confirmDelete(post._id);
-                      }}
-                      className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
-                    >
-                      <FiTrash2 size={16} />
-                    </button>
                   </div>
                   <div
                     className="p-4 cursor-pointer"
