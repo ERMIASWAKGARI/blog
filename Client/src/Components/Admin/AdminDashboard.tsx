@@ -254,9 +254,9 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
         ) : currentView === "users" ? (
-          <UsersView />
+          <UsersView refreshData={() => fetchData("users")} />
         ) : (
-          <PostsView />
+          <PostsView refreshData={() => fetchData("posts")} />
         )}
       </div>
     </div>

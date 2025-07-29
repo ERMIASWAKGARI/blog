@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../axiosConfig";
-import { FiTrash2, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiActivity, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 interface Post {
   _id: string;
@@ -14,7 +14,11 @@ interface Post {
   };
 }
 
-const PostsView: React.FC = () => {
+interface PostsViewProps {
+  refreshData: () => void;
+}
+
+const PostsView: React.FC<PostsViewProps> = ({ refreshData }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -84,13 +88,25 @@ const PostsView: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 p-6 md:p-8 bg-gray-50 min-h-screen">
-      {/* Header Section */}
+    <div className="flex-1 p-6 md:p-8 lg:p-10">
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-800">Posts Management</h2>
-        <p className="text-gray-600 mt-2">
-          View and manage all published posts
-        </p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">
+              Posts Management
+            </h1>
+            <p className="text-gray-500 mt-2">
+              View and manage all published posts
+            </p>
+          </div>
+          <button
+            onClick={refreshData}
+            className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            <FiActivity className="mr-2" />
+            Refresh Data
+          </button>
+        </div>
       </div>
 
       {/* Search and Controls */}

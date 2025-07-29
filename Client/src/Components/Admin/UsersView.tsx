@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { FiActivity } from "react-icons/fi";
+
 import Modal from "./Modal";
 import api from "../../axiosConfig";
 
@@ -13,7 +15,11 @@ interface User {
   numberOfPost: number;
 }
 
-const UsersView: React.FC = () => {
+interface UsersViewProps {
+  refreshData: () => void;
+}
+
+const UsersView: React.FC<UsersViewProps> = ({ refreshData }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -141,15 +147,25 @@ const UsersView: React.FC = () => {
   }, [successMessage]);
 
   return (
-    <div className="p-4 md:p-6">
-      {/* Header Section */}
+    <div className="flex-1 p-6 md:p-8 lg:p-10">
       <div className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-          User Management
-        </h1>
-        <p className="text-gray-600">
-          Manage all registered users in the system
-        </p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">
+              Users Management
+            </h1>
+            <p className="text-gray-500 mt-2">
+              View and manage all registered users
+            </p>
+          </div>
+          <button
+            onClick={refreshData}
+            className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            <FiActivity className="mr-2" />
+            Refresh Data
+          </button>
+        </div>
       </div>
 
       {/* Search and Filter Section */}
