@@ -84,7 +84,7 @@ const PostsView: React.FC = () => {
               onClick={() => handlePostClick(post)}
             >
               <img
-                src={`${BASE_URL}/${post.imagePath}`}
+                src={post.imagePath}
                 alt={post.title}
                 className="w-full h-40 object-cover"
               />
@@ -141,7 +141,7 @@ const PostsView: React.FC = () => {
               {selectedPost.title}
             </h2>
             <img
-              src={`${BASE_URL}/${selectedPost.imagePath}`}
+              src={selectedPost.imagePath}
               alt={selectedPost.title}
               className="w-full h-60 object-cover mb-4"
             />
