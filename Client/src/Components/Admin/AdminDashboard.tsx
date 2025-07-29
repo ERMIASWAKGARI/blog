@@ -15,23 +15,30 @@ const AdminDashboard: React.FC = () => {
   const [currentView, setCurrentView] = useState<
     "dashboard" | "users" | "posts"
   >("dashboard");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  const fetchData = async () => {
+  const fetchData = async (view: "dashboard" | "users" | "posts") => {
     setLoading(true);
     try {
       const [userResponse, postResponse, activityResponse] = await Promise.all([
         api.get(`/admin`),
         api.get(`/admin/getAllposts`),
-        api.get(`/admin/recent-activity`),
+        view === "dashboard"
+          ? api.get(`/admin/recent-activity`)
+          : Promise.resolve({ data: { activities: [] } }),
       ]);
 
       setTotalUsers(userResponse.data.totalUsers);
       setTotalPosts(postResponse.data.totalPosts);
       setActiveUsers(userResponse.data.activeUsers || 0);
-      setRecentActivity(activityResponse.data.activities || []);
+
+      // Only set recent activity if we're on the dashboard view
+      if (view === "dashboard") {
+        setRecentActivity(activityResponse.data.activities || []);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -42,32 +49,37 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const view = params.get("view") as "dashboard" | "users" | "posts";
-    if (view) {
+    if (view && view !== currentView) {
       setCurrentView(view);
-    } else {
+      fetchData(view);
+    } else if (!view) {
       navigate("/admin/dashboard?view=dashboard", { replace: true });
     }
-  }, [location.search, navigate]);
+  }, [location.search]);
 
-  useEffect(() => {
-    fetchData();
-  }, [currentView]);
+  const handleViewChange = (view: "dashboard" | "users" | "posts") => {
+    navigate(`/admin/dashboard?view=${view}`);
+    // Don't setCurrentView here - let the useEffect handle it
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
       <SideNavbar
         currentView={currentView}
-        setCurrentView={(view) => {
-          setCurrentView(view);
-          navigate(`/admin/dashboard?view=${view}`);
-        }}
-        fetchUsers={fetchData}
-        fetchPosts={fetchData}
+        setCurrentView={handleViewChange}
+        fetchUsers={() => fetchData("users")}
+        fetchPosts={() => fetchData("posts")}
+        collapsed={sidebarCollapsed}
+        setCollapsed={setSidebarCollapsed}
       />
 
       {/* Main Content */}
-      <div className="main-content flex-1 overflow-y-auto">
+      <div
+        className={`transition-all duration-300 flex-1 ${
+          sidebarCollapsed ? "ml-20" : "ml-64"
+        }`}
+      >
         {currentView === "dashboard" ? (
           <div className="p-6 md:p-8 lg:p-10">
             {/* Header */}
@@ -87,7 +99,7 @@ const AdminDashboard: React.FC = () => {
                   </p>
                 </div>
                 <button
-                  onClick={fetchData}
+                  onClick={() => fetchData(currentView)}
                   className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                 >
                   <FiActivity className="mr-2" />
