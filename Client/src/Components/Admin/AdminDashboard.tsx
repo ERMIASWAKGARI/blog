@@ -52,45 +52,40 @@ const AdminDashboard: React.FC = () => {
         fetchUsers={fetchData}
         fetchPosts={fetchData}
       />
-      <div className="main-content flex-1 p-8 md:p-12 bg-gray-200 overflow-y-auto">
+      <div className="main-content flex-1 p-6 md:p-10 bg-gray-50 overflow-y-auto">
         {currentView === "dashboard" ? (
           <>
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">
-              Dashboard Overview
-            </h2>
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-              <p className="text-lg mb-4 text-gray-600">
-                Welcome to the Admin Dashboard!
+            {/* Header */}
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-800">
+                Admin Dashboard
+              </h2>
+              <p className="text-gray-500 mt-2">
+                Welcome back! Here's an overview of this platform stats.
               </p>
-              <p className="text-gray-600">
-                Here you can manage users, view statistics, and configure
-                settings for your application.
-              </p>
-              <div className="mt-6">
-                <table className="min-w-full bg-white border border-gray-300 rounded-lg overflow-hidden">
-                  <thead>
-                    <tr className="bg-gray-100 text-left">
-                      <th className="py-3 px-4 border-b text-gray-600 font-semibold">
-                        Metric
-                      </th>
-                      <th className="py-3 px-4 border-b text-gray-600 font-semibold">
-                        Value
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b">
-                      <td className="py-2 px-4 text-gray-700">Total Users:</td>
-                      <td className="py-2 px-4 text-gray-700">{totalUsers}</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2 px-4 text-gray-700">Total Posts:</td>
-                      <td className="py-2 px-4 text-gray-700">{totalPosts}</td>
-                    </tr>
-                  </tbody>
-                </table>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow duration-300">
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                  Total Users
+                </h3>
+                <p className="text-3xl font-bold text-indigo-600">
+                  {totalUsers}
+                </p>
+              </div>
+              <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow duration-300">
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                  Total Posts
+                </h3>
+                <p className="text-3xl font-bold text-green-600">
+                  {totalPosts}
+                </p>
               </div>
             </div>
+
+            {/* Add more cards/metrics below if needed */}
           </>
         ) : currentView === "users" ? (
           <UsersView />
