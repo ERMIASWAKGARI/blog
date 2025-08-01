@@ -254,10 +254,11 @@ const MobileNavLink: React.FC<{
   children: React.ReactNode;
 }> = ({ children, onClick, textColor, hoverTextColor }) => (
   <a
-    className={`px-4 py-2 text-sm font-medium ${textColor} hover:${hoverTextColor} hover:bg-gray-50 rounded-md transition-all duration-200 cursor-pointer`}
+    className={`px-4 py-2 text-sm font-medium ${textColor} hover:${hoverTextColor} transition-all duration-200 ease-in-out cursor-pointer relative group`}
     onClick={onClick}
   >
     {children}
+    <span className="absolute bottom-0 left-0 w-1/2 h-0.5 bg-purple-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out"></span>
   </a>
 );
 
