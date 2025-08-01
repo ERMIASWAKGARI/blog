@@ -151,7 +151,7 @@ const Login: React.FC = () => {
               >
                 <button
                   type="submit"
-                  className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
+                  className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-indigo-600 hover:to-purple-600 text-white font-medium rounded-lg shadow-sm hover:scale-105 hover:shadow-md transition-all duration-300"
                 >
                   Login
                 </button>
