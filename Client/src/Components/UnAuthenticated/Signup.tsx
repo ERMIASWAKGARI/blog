@@ -1,109 +1,109 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react'
-import { BsFillImageFill } from 'react-icons/bs'
-import { MdEmail, MdLock, MdPerson } from 'react-icons/md'
-import { useNavigate } from 'react-router-dom'
-import ErrorMessage from '../Profile/UserProfile/ErrorMessage'
-import SuccessMessage from '../Profile/UserProfile/SuccessMessage'
-import LoadingSpinner from './LoadingSpinner'
+import { useState } from "react";
+import { BsFillImageFill } from "react-icons/bs";
+import { MdEmail, MdLock, MdPerson } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import ErrorMessage from "../Profile/UserProfile/ErrorMessage";
+import SuccessMessage from "../Profile/UserProfile/SuccessMessage";
+import LoadingSpinner from "./LoadingSpinner";
 
-import api from '../../axiosConfig'
+import api from "../../axiosConfig";
 
 const SignUp: React.FC = () => {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [passwordConfirm, setPasswordConfirm] = useState('')
-  const [gender, setGender] = useState<'male' | 'female'>('male')
-  const [photo, setPhoto] = useState<File | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [signUpSuccess, setSignupSuccess] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [gender, setGender] = useState<"male" | "female">("male");
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [signUpSuccess, setSignupSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const validateEmail = (email: string) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return re.test(String(email).toLowerCase())
-  }
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
 
   const validatePassword = (password: string) => {
-    return password.length >= 8
-  }
+    return password.length >= 8;
+  };
 
   const validateName = (name: string) => {
-    const re = /^[a-zA-Z\s]+$/
-    return re.test(name)
-  }
+    const re = /^[a-zA-Z\s]+$/;
+    return re.test(name);
+  };
 
   const validateForm = () => {
     if (!name || !email || !password || !passwordConfirm) {
-      setError('All fields are required.')
-      return false
+      setError("All fields are required.");
+      return false;
     }
     if (!validateName(name)) {
-      setError('Name can only contain letters and spaces.')
-      return false
+      setError("Name can only contain letters and spaces.");
+      return false;
     }
     if (!validateEmail(email)) {
-      setError('Invalid email format.')
-      return false
+      setError("Invalid email format.");
+      return false;
     }
     if (!validatePassword(password)) {
-      setError('Password must be at least 8 characters long.')
-      return false
+      setError("Password must be at least 8 characters long.");
+      return false;
     }
     if (password !== passwordConfirm) {
-      setError('Passwords do not match.')
-      return false
+      setError("Passwords do not match.");
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
   async function SignUpSubmitHandler(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
     if (!validateForm()) {
-      return
+      return;
     }
 
-    setLoading(true)
-    setError(null)
-    setSignupSuccess(false)
+    setLoading(true);
+    setError(null);
+    setSignupSuccess(false);
 
     try {
-      const formData = new FormData()
-      formData.append('name', name)
-      formData.append('email', email)
-      formData.append('password', password)
-      formData.append('passwordConfirm', passwordConfirm)
-      formData.append('gender', gender)
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("passwordConfirm", passwordConfirm);
+      formData.append("gender", gender);
       if (photo) {
-        formData.append('photo', photo)
+        formData.append("photo", photo);
       }
 
       const response = await api.post(`/users/signup`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
-      })
+      });
 
       if (response.data) {
-        setError(null)
-        setSignupSuccess(true)
-        setTimeout(() => navigate('/login'), 2000)
+        setError(null);
+        setSignupSuccess(true);
+        setTimeout(() => navigate("/login"), 2000);
       }
     } catch (error: any) {
-      setSignupSuccess(false)
+      setSignupSuccess(false);
       if (
         error.response &&
         error.response.data &&
         error.response.data.message
       ) {
-        setError(error.response.data.message)
+        setError(error.response.data.message);
       } else {
-        setError('An unexpected error occurred. Please try again.')
+        setError("An unexpected error occurred. Please try again.");
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -121,7 +121,7 @@ const SignUp: React.FC = () => {
           )}
           {signUpSuccess && !error && (
             <SuccessMessage
-              message={'Sign up successful!'}
+              message={"Sign up successful!"}
               onClose={() => setSignupSuccess(false)}
             />
           )}
@@ -181,7 +181,7 @@ const SignUp: React.FC = () => {
           <div className="relative">
             <select
               value={gender}
-              onChange={(e) => setGender(e.target.value as 'male' | 'female')}
+              onChange={(e) => setGender(e.target.value as "male" | "female")}
               className="w-full p-2 pl-10 border border-gray-300 rounded-full"
             >
               <option value="male">Male</option>
@@ -203,7 +203,7 @@ const SignUp: React.FC = () => {
           <div>
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white rounded-full shadow-md transition duration-300"
+              className="w-full py-2 px-4 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-indigo-500 hover:to-purple-500 text-white rounded-full shadow-md transition duration-300"
             >
               Sign Up
             </button>
@@ -211,7 +211,7 @@ const SignUp: React.FC = () => {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SignUp
+export default SignUp;

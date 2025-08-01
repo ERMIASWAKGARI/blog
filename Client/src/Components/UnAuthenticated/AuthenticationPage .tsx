@@ -56,13 +56,13 @@ const AuthenticationPage: React.FC = () => {
             <div className="flex flex-col space-y-4">
               <button
                 onClick={handleLoginClick}
-                className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white py-2 px-6 rounded-full shadow-md transition duration-300 disabled:opacity-50 mb-4"
+                className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-indigo-500 hover:to-purple-500 text-white py-2 px-6 rounded-full shadow-md transition duration-300 disabled:opacity-50 mb-4 hover:scale-105"
               >
                 Login
               </button>
               <button
                 onClick={handleSignUpClick}
-                className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white py-2 px-6 rounded-full shadow-md transition duration-300 disabled:opacity-50"
+                className="bg-gradient-to-r from-white to-gray-400 hover:from-gray-400 hover:to-white text-black py-2 px-6 rounded-full shadow-md transition duration-300 disabled:opacity-50 mb-4 hover:scale-105"
               >
                 Sign up
               </button>
