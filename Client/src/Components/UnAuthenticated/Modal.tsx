@@ -1,5 +1,5 @@
-import moment from 'moment'
-import React, { useEffect, useState } from 'react'
+import moment from "moment";
+import React, { useEffect, useState } from "react";
 import {
   FaCalendarAlt,
   FaChevronLeft,
@@ -8,54 +8,54 @@ import {
   FaTag,
   FaTimes,
   FaUser,
-} from 'react-icons/fa'
+} from "react-icons/fa";
 
 interface Post {
-  _id: string
-  title: string
-  textContent: string
-  imagePath?: string
-  videoContent?: string
-  postedAt: string
-  createdAt: string
-  category: string
-  author: string
-  authorImage: string
-  ratingQuantity: number
-  averageRating: number
+  _id: string;
+  title: string;
+  textContent: string;
+  imagePath?: string;
+  videoContent?: string;
+  postedAt: string;
+  createdAt: string;
+  category: string;
+  author: string;
+  authorImage: string;
+  ratingQuantity: number;
+  averageRating: number;
 }
 
 interface ModalProps {
-  isOpen: boolean
-  onClose: () => void
-  post: Post | null
+  isOpen: boolean;
+  onClose: () => void;
+  post: Post | null;
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, post }) => {
-  const [currentIndex, setCurrentIndex] = useState<number>(0)
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   useEffect(() => {
-    if (isOpen) setCurrentIndex(0) // Reset carousel on open
-  }, [isOpen])
+    if (isOpen) setCurrentIndex(0); // Reset carousel on open
+  }, [isOpen]);
 
-  if (!post) return null
+  if (!post) return null;
 
   const mediaItems = [
-    ...(post.imagePath ? [{ type: 'image', src: post.imagePath }] : []),
-    ...(post.videoContent ? [{ type: 'video', src: post.videoContent }] : []),
-  ]
+    ...(post.imagePath ? [{ type: "image", src: post.imagePath }] : []),
+    ...(post.videoContent ? [{ type: "video", src: post.videoContent }] : []),
+  ];
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? mediaItems.length - 1 : prevIndex - 1
-    )
-  }
+    );
+  };
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) =>
       prevIndex === mediaItems.length - 1 ? 0 : prevIndex + 1
-    )
-  }
+    );
+  };
 
   return isOpen ? (
     <div className="fixed inset-0 z-50 flex justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
@@ -71,7 +71,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, post }) => {
         <div className="relative w-full h-80 bg-gray-100 flex items-center justify-center overflow-hidden">
           {mediaItems.length > 0 && (
             <>
-              {mediaItems[currentIndex].type === 'image' ? (
+              {mediaItems[currentIndex].type === "image" ? (
                 <img
                   src={mediaItems[currentIndex].src}
                   alt={post.title}
@@ -110,7 +110,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, post }) => {
             <h2 className="text-2xl font-bold text-gray-800">{post.title}</h2>
             <div className="flex items-center gap-1 text-sm text-yellow-500">
               <FaStar />
-              <span>{post.averageRating?.toFixed(1) || '0.0'}</span>
+              <span>{post.averageRating?.toFixed(1) || "0.0"}</span>
               <span className="text-gray-500">({post.ratingQuantity})</span>
             </div>
           </div>
@@ -122,7 +122,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, post }) => {
             </div>
             <div className="flex items-center gap-1">
               <FaCalendarAlt className="text-purple-600" />
-              {moment(post.postedAt).format('MMMM Do YYYY')}
+              <span>{moment(post.createdAt).fromNow()}</span>
             </div>
             <div className="flex items-center gap-1">
               <FaTag className="text-purple-600" />
@@ -132,14 +132,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, post }) => {
 
           {/* Text Content */}
           <div className="prose prose-sm max-w-none text-gray-700">
-            {post.textContent.split('\n').map((paragraph, index) => (
+            {post.textContent.split("\n").map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}
           </div>
         </div>
       </div>
     </div>
-  ) : null
-}
+  ) : null;
+};
 
-export default Modal
+export default Modal;
