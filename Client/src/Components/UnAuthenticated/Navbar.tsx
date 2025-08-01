@@ -23,126 +23,202 @@ const Navbar: React.FC = () => {
     }
   };
 
-  const textColor = "text-black";
-  const bgColor = "bg-blue-50";
+  const textColor = "text-gray-800";
+  const hoverTextColor = "text-purple-600";
+  const bgColor = "bg-white";
+  const shadow = "shadow-md";
 
   return (
     <nav
-      className={`${bgColor} fixed w-full top-0 z-50 transition duration-300`}
+      className={`${bgColor} ${shadow} fixed w-full top-0 z-50 transition-all duration-300`}
     >
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <div
-          className="flex items-center cursor-pointer"
-          onClick={() => handleNavigation("hero")}
-        >
-          <img
-            src={logo}
-            alt="Debbal Technologies Logo"
-            className="h-10 md:h-12 p-1 rounded-full shadow-md"
-            style={{ backgroundColor: "#FFFFFF" }}
-          />
-          <span
-            className="ml-2 text-xl font-bold text-black"
-            style={{ fontFamily: "MuseoModerno, sans-serif" }}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo/Brand */}
+          <div
+            className="flex items-center cursor-pointer"
+            onClick={() => handleNavigation("hero")}
           >
-            Debbal Tech Gazette
-          </span>
-        </div>
+            <img
+              src={logo}
+              alt="Debbal Technologies Logo"
+              className="h-10 md:h-12 p-1 rounded-full"
+              style={{ backgroundColor: "#FFFFFF" }}
+            />
+            <span
+              className="ml-2 text-xl font-bold text-gray-900"
+              style={{ fontFamily: "MuseoModerno, sans-serif" }}
+            >
+              Debbal Tech Gazette
+            </span>
+          </div>
 
-        <div className="flex md:hidden">
-          <button
-            type="button"
-            className={`text-xl ${textColor} focus:outline-none`}
-            aria-label="Toggle navigation"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <svg
-              className="w-6 h-6 fill-current"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-1">
+            <NavLink
+              onClick={() => handleNavigation("hero")}
+              textColor={textColor}
+              hoverTextColor={hoverTextColor}
+            >
+              Home
+            </NavLink>
+            <NavLink
+              onClick={() => handleNavigation("about")}
+              textColor={textColor}
+              hoverTextColor={hoverTextColor}
+            >
+              About
+            </NavLink>
+            <NavLink
+              onClick={() => handleNavigation("latest-posts")}
+              textColor={textColor}
+              hoverTextColor={hoverTextColor}
+            >
+              Blogs
+            </NavLink>
+            <NavLink
+              onClick={() => handleNavigation("categories")}
+              textColor={textColor}
+              hoverTextColor={hoverTextColor}
+            >
+              Categories
+            </NavLink>
+            <NavLink
+              onClick={() => handleNavigation("testimonials")}
+              textColor={textColor}
+              hoverTextColor={hoverTextColor}
+            >
+              Testimonials
+            </NavLink>
+            <NavLink
+              onClick={() => handleNavigation("authors")}
+              textColor={textColor}
+              hoverTextColor={hoverTextColor}
+            >
+              Authors
+            </NavLink>
+            <NavLink
+              onClick={() => handleNavigation("newsletter")}
+              textColor={textColor}
+              hoverTextColor={hoverTextColor}
+            >
+              Newsletter
+            </NavLink>
+          </div>
+
+          {/* Login Button - Desktop */}
+          <div className="hidden md:block ml-4">
+            <Link
+              to="/login"
+              className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white py-2 px-6 rounded-full shadow-md transition-all duration-300 hover:shadow-lg"
+            >
+              Login
+            </Link>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="flex md:hidden">
+            <button
+              type="button"
+              className={`text-xl ${textColor} focus:outline-none`}
+              aria-label="Toggle navigation"
+              onClick={() => setIsOpen(!isOpen)}
             >
               {isOpen ? (
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm16 5H4v2h16v-2z"
-                />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
               ) : (
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"
-                />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
               )}
-            </svg>
-          </button>
+            </button>
+          </div>
         </div>
+      </div>
 
-        <div
-          className={`md:flex items-center ${
-            isOpen ? "block" : "hidden"
-          } bg-gray-200 md:bg-transparent`}
-        >
-          <NavLink
+      {/* Mobile Navigation */}
+      <div
+        className={`md:hidden fixed right-0 top-16 w-auto min-w-[200px] bg-white shadow-lg rounded-bl-lg transition-all duration-300 ease-in-out transform ${
+          isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+        }`}
+      >
+        <div className="flex flex-col space-y-1 p-2">
+          <MobileNavLink
             onClick={() => handleNavigation("hero")}
             textColor={textColor}
+            hoverTextColor={hoverTextColor}
           >
             Home
-          </NavLink>
-          <NavLink
+          </MobileNavLink>
+          <MobileNavLink
             onClick={() => handleNavigation("about")}
             textColor={textColor}
+            hoverTextColor={hoverTextColor}
           >
             About
-          </NavLink>
-          <NavLink
+          </MobileNavLink>
+          <MobileNavLink
             onClick={() => handleNavigation("latest-posts")}
             textColor={textColor}
+            hoverTextColor={hoverTextColor}
           >
             Blogs
-          </NavLink>
-          <NavLink
+          </MobileNavLink>
+          <MobileNavLink
             onClick={() => handleNavigation("categories")}
             textColor={textColor}
+            hoverTextColor={hoverTextColor}
           >
             Categories
-          </NavLink>
-          <NavLink
+          </MobileNavLink>
+          <MobileNavLink
             onClick={() => handleNavigation("testimonials")}
             textColor={textColor}
+            hoverTextColor={hoverTextColor}
           >
             Testimonials
-          </NavLink>
-          <NavLink
+          </MobileNavLink>
+          <MobileNavLink
             onClick={() => handleNavigation("authors")}
             textColor={textColor}
+            hoverTextColor={hoverTextColor}
           >
             Authors
-          </NavLink>
-          <NavLink
+          </MobileNavLink>
+          <MobileNavLink
             onClick={() => handleNavigation("newsletter")}
             textColor={textColor}
+            hoverTextColor={hoverTextColor}
           >
             Newsletter
-          </NavLink>
-          <NavLink
-            onClick={() => handleNavigation("footer")}
-            textColor={textColor}
-          >
-            Contact
-          </NavLink>
+          </MobileNavLink>
           <Link
             to="/login"
-            className="block px-6 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white rounded-full shadow-md transition duration-300 disabled:opacity-50 mb-4 md:hidden"
-          >
-            Login
-          </Link>
-        </div>
-
-        <div className="hidden md:flex">
-          <Link
-            to="/login"
-            className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white py-2 px-6 rounded-full shadow-md transition duration-300 disabled:opacity-50 "
+            className="mt-1 text-center bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white py-2 px-4 rounded-full shadow-md transition-all duration-300 text-sm"
           >
             Login
           </Link>
@@ -152,13 +228,33 @@ const Navbar: React.FC = () => {
   );
 };
 
+// Desktop NavLink Component
 const NavLink: React.FC<{
   onClick: () => void;
   textColor: string;
+  hoverTextColor: string;
   children: React.ReactNode;
-}> = ({ children, onClick, textColor }) => (
+}> = ({ children, onClick, textColor, hoverTextColor }) => (
+  <div className="px-1">
+    <a
+      className={`px-3 py-2 text-sm font-medium ${textColor} hover:${hoverTextColor} transition-all duration-200 ease-in-out cursor-pointer relative group`}
+      onClick={onClick}
+    >
+      {children}
+      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-purple-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out"></span>
+    </a>
+  </div>
+);
+
+// Mobile NavLink Component
+const MobileNavLink: React.FC<{
+  onClick: () => void;
+  textColor: string;
+  hoverTextColor: string;
+  children: React.ReactNode;
+}> = ({ children, onClick, textColor, hoverTextColor }) => (
   <a
-    className={`block px-4 py-2 text-sm ${textColor} hover:text-gray-900 hover:bg-gray-100 hover:border-2 hover:border-purple-500 rounded-full mx-2 transition duration-300 ease-in-out cursor-pointer`}
+    className={`px-4 py-2 text-sm font-medium ${textColor} hover:${hoverTextColor} hover:bg-gray-50 rounded-md transition-all duration-200 cursor-pointer`}
     onClick={onClick}
   >
     {children}
