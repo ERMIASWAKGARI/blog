@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Login from "./Login";
 import SignUp from "./Signup";
 import Navbar from "./Navbar";
-import { FiArrowRight, FiUser, FiKey, FiMail } from "react-icons/fi";
+import { FiArrowRight, FiUser, FiKey, FiClock } from "react-icons/fi";
 
 const AuthenticationPage: React.FC = () => {
   const [showLogin, setShowLogin] = useState<boolean>(true);
@@ -96,11 +96,11 @@ const AuthenticationPage: React.FC = () => {
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.8 }}
+                    transition={{ delay: 0.7 }}
                   >
                     <div className="flex items-center text-indigo-100">
-                      <FiMail className="mr-3 text-xl" />
-                      <span>Instant notifications</span>
+                      <FiClock className="mr-3 text-xl" />
+                      <span>Timely posts/insights</span>
                     </div>
                   </motion.div>
                 </div>
