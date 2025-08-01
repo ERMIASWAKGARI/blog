@@ -3,10 +3,10 @@ import { useState } from "react";
 import { BsFillImageFill } from "react-icons/bs";
 import { MdEmail, MdLock, MdPerson } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import ErrorMessage from "../Profile/UserProfile/ErrorMessage";
 import SuccessMessage from "../Profile/UserProfile/SuccessMessage";
 import LoadingSpinner from "./LoadingSpinner";
-
 import api from "../../axiosConfig";
 
 const SignUp: React.FC = () => {
@@ -61,9 +61,7 @@ const SignUp: React.FC = () => {
 
   async function SignUpSubmitHandler(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
     setError(null);
@@ -76,141 +74,183 @@ const SignUp: React.FC = () => {
       formData.append("password", password);
       formData.append("passwordConfirm", passwordConfirm);
       formData.append("gender", gender);
-      if (photo) {
-        formData.append("photo", photo);
-      }
+      if (photo) formData.append("photo", photo);
 
       const response = await api.post(`/users/signup`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       if (response.data) {
-        setError(null);
         setSignupSuccess(true);
         setTimeout(() => navigate("/login"), 2000);
       }
     } catch (error: any) {
       setSignupSuccess(false);
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        setError(error.response.data.message);
-      } else {
-        setError("An unexpected error occurred. Please try again.");
-      }
+      setError(
+        error.response?.data?.message ||
+          "An unexpected error occurred. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="relative flex items-center justify-center w-full">
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
-          <LoadingSpinner loading={loading} />
-        </div>
-      )}
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <form onSubmit={SignUpSubmitHandler} className="space-y-2">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="w-full max-w-md"
+    >
+      <div className="relative">
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 rounded-xl z-10">
+            <LoadingSpinner loading={loading} />
+          </div>
+        )}
+
+        <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+          <motion.h2
+            className="text-3xl font-bold text-center mb-8 text-gray-800"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            Create Account
+          </motion.h2>
+
           {error && !signUpSuccess && (
             <ErrorMessage message={error} onClose={() => setError(null)} />
           )}
           {signUpSuccess && !error && (
             <SuccessMessage
-              message={"Sign up successful!"}
+              message="Sign up successful!"
               onClose={() => setSignupSuccess(false)}
             />
           )}
-          <h2 className="text-2xl font-bold text-center">SIGN UP</h2>
-          <div className="relative">
-            <MdPerson
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400"
-              size={24}
-            />
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter name"
-              className="w-full p-2 pl-10 border border-gray-300 rounded-full"
-            />
-          </div>
-          <div className="relative">
-            <MdEmail
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400"
-              size={24}
-            />
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter email"
-              className="w-full p-2 pl-10 border border-gray-300 rounded-full"
-            />
-          </div>
-          <div className="relative">
-            <MdLock
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400"
-              size={24}
-            />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
-              className="w-full p-2 pl-10 border border-gray-300 rounded-full"
-            />
-          </div>
-          <div className="relative">
-            <MdLock
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400"
-              size={24}
-            />
-            <input
-              type="password"
-              value={passwordConfirm}
-              onChange={(e) => setPasswordConfirm(e.target.value)}
-              placeholder="Confirm password"
-              className="w-full p-2 pl-10 border border-gray-300 rounded-full"
-            />
-          </div>
-          <div className="relative">
-            <select
-              value={gender}
-              onChange={(e) => setGender(e.target.value as "male" | "female")}
-              className="w-full p-2 pl-10 border border-gray-300 rounded-full"
+
+          <form onSubmit={SignUpSubmitHandler} className="space-y-4">
+            {[
+              {
+                icon: <MdPerson className="text-gray-400" size={20} />,
+                type: "text",
+                value: name,
+                onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                  setName(e.target.value),
+                placeholder: "Full name",
+                delay: 0.2,
+              },
+              {
+                icon: <MdEmail className="text-gray-400" size={20} />,
+                type: "email",
+                value: email,
+                onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                  setEmail(e.target.value),
+                placeholder: "Email address",
+                delay: 0.3,
+              },
+              {
+                icon: <MdLock className="text-gray-400" size={20} />,
+                type: "password",
+                value: password,
+                onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                  setPassword(e.target.value),
+                placeholder: "Password (min 8 characters)",
+                delay: 0.4,
+              },
+              {
+                icon: <MdLock className="text-gray-400" size={20} />,
+                type: "password",
+                value: passwordConfirm,
+                onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                  setPasswordConfirm(e.target.value),
+                placeholder: "Confirm password",
+                delay: 0.5,
+              },
+            ].map((field, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: field.delay }}
+                className="relative"
+              >
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  {field.icon}
+                </div>
+                <input
+                  type={field.type}
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder={field.placeholder}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                />
+              </motion.div>
+            ))}
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="grid grid-cols-2 gap-4"
             >
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-          </div>
-          <div className="relative">
-            <BsFillImageFill
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400"
-              size={24}
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setPhoto(e.target.files?.[0] || null)}
-              className="w-full p-2 pl-10 border border-gray-300 rounded-full"
-            />
-          </div>
-          <div>
-            <button
-              type="submit"
-              className="w-full py-2 px-4 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-indigo-500 hover:to-purple-500 text-white rounded-full shadow-md transition duration-300"
+              <div className="relative">
+                <select
+                  value={gender}
+                  onChange={(e) =>
+                    setGender(e.target.value as "male" | "female")
+                  }
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none bg-white"
+                >
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg
+                    className="w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <BsFillImageFill className="text-gray-400" size={20} />
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setPhoto(e.target.files?.[0] || null)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg file:border-0 file:bg-transparent file:text-sm file:font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
             >
-              Sign Up
-            </button>
-          </div>
-        </form>
+              <button
+                type="submit"
+                className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
+              >
+                Create Account
+              </button>
+            </motion.div>
+          </form>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

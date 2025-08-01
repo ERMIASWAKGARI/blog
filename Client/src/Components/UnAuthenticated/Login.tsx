@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import { MdEmail, MdLock } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../../UserContext";
+import { motion } from "framer-motion";
 import ErrorMessage from "../Profile/UserProfile/ErrorMessage";
 import SuccessMessage from "../Profile/UserProfile/SuccessMessage";
 import LoadingSpinner from "./LoadingSpinner";
-
 import api from "../../axiosConfig";
 
 const Login: React.FC = () => {
@@ -29,8 +29,6 @@ const Login: React.FC = () => {
         password,
       });
 
-      console.log(userCredential);
-
       if (userCredential) {
         setError("");
         setShowErrorMessage(false);
@@ -44,11 +42,7 @@ const Login: React.FC = () => {
       }
     } catch (error: any) {
       setShowSuccessMessage(false);
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
+      if (error.response?.data?.message) {
         setError(error.response.data.message);
       } else {
         setError("An unexpected error occurred. Please try again.");
@@ -60,72 +54,113 @@ const Login: React.FC = () => {
   }
 
   return (
-    <div className="relative flex items-center justify-center w-full">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
-        {loading && <LoadingSpinner loading={loading} />}
-        {showSuccessMessage && (
-          <SuccessMessage
-            message={result}
-            onClose={() => setShowSuccessMessage(false)}
-          />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="w-full max-w-md"
+    >
+      <div className="relative">
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 rounded-xl z-10">
+            <LoadingSpinner loading={loading} />
+          </div>
         )}
-        {showErrorMessage && (
-          <ErrorMessage
-            message={error}
-            onClose={() => setShowErrorMessage(false)}
-          />
-        )}
-        {!showSuccessMessage && (
-          <form onSubmit={formSubmitHandler} className="space-y-6">
-            <h2 className="text-2xl font-bold text-center">LOGIN</h2>
-            <div className="relative">
-              <MdEmail
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400"
-                size={24}
-              />
-              <input
-                placeholder="Enter email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full p-2 pl-10 border border-gray-300 rounded-full"
-              />
-            </div>
-            <div className="relative">
-              <MdLock
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400"
-                size={24}
-              />
-              <input
-                placeholder="Enter password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full p-2 pl-10 border border-gray-300 rounded-full"
-              />
-            </div>
-            <div>
-              <button
-                type="submit"
-                className="w-full py-2 px-4 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-indigo-500 hover:to-purple-500 text-white rounded-full shadow-md transition duration-300"
+
+        <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+          <motion.h2
+            className="text-3xl font-bold text-center mb-8 text-gray-800"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            Welcome Back
+          </motion.h2>
+
+          {showSuccessMessage && (
+            <SuccessMessage
+              message={result}
+              onClose={() => setShowSuccessMessage(false)}
+            />
+          )}
+          {showErrorMessage && (
+            <ErrorMessage
+              message={error}
+              onClose={() => setShowErrorMessage(false)}
+            />
+          )}
+
+          {!showSuccessMessage && (
+            <form onSubmit={formSubmitHandler} className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="relative"
               >
-                Login
-              </button>
-            </div>
-            <div className="flex justify-between items-center">
-              <Link
-                to="/forgotpassword"
-                className="text-sm text-purple-600 hover:underline"
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <MdEmail className="text-gray-400" size={20} />
+                </div>
+                <input
+                  placeholder="Email address"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="relative"
               >
-                Forgot password?
-              </Link>
-            </div>
-          </form>
-        )}
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <MdLock className="text-gray-400" size={20} />
+                </div>
+                <input
+                  placeholder="Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="flex justify-end"
+              >
+                <Link
+                  to="/forgotpassword"
+                  className="text-sm text-purple-600 hover:text-purple-800 transition-colors"
+                >
+                  Forgot password?
+                </Link>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <button
+                  type="submit"
+                  className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
+                >
+                  Login
+                </button>
+              </motion.div>
+            </form>
+          )}
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
