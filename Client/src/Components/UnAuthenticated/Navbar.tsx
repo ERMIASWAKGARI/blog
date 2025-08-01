@@ -110,7 +110,7 @@ const Navbar: React.FC = () => {
           <div className="hidden md:block ml-4 hover:scale-105 transition-transform duration-300">
             <Link
               to="/login"
-              className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-indigo-500 hover:to-purple-500 text-white py-2 px-6 rounded-full shadow-md transition-all duration-300 hover:shadow-lg"
+              className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-purple-500 hover:to-indigo-500 text-white py-2 px-6 rounded-full shadow-md transition-all duration-300 hover:shadow-lg"
             >
               Login
             </Link>
@@ -218,7 +218,7 @@ const Navbar: React.FC = () => {
           </MobileNavLink>
           <Link
             to="/login"
-            className="mt-1 text-center bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-indigo-500 hover:to-purple-500 text-white py-2 px-4 rounded-full shadow-md transition-all duration-300 text-sm scale-95 hover:scale-100 "
+            className="mt-1 text-center bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-purple-500 hover:to-indigo-500 text-white py-2 px-4 rounded-full shadow-md transition-all duration-300 text-sm scale-95 hover:scale-100 "
           >
             Login
           </Link>
