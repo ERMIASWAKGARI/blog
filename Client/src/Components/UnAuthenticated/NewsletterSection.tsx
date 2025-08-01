@@ -68,7 +68,7 @@ const NewsletterSection: React.FC<Props> = ({ id }) => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <div className="relative flex-grow max-w-md">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <FiMail className="text-gray-400" />
+                  <FiMail className="text-indigo-500" />
                 </div>
                 <input
                   type="email"
@@ -82,7 +82,7 @@ const NewsletterSection: React.FC<Props> = ({ id }) => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center disabled:opacity-70"
+                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-indigo-600 hover:to-purple-600 text-white font-medium rounded-full shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center disabled:opacity-70 scale-95 hover:scale-105"
               >
                 {isSubmitting ? (
                   "Subscribing..."
