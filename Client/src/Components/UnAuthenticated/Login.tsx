@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { MdEmail, MdLock } from "react-icons/md";
@@ -14,7 +13,7 @@ const Login: React.FC = () => {
   const { setUser } = useUser();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [result, setResult] = useState<any>(null);
+  const [, setResult] = useState<any>(null);
   const [error, setError] = useState<any>(false);
   const [loading, setLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
