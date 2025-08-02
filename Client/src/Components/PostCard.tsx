@@ -1,5 +1,3 @@
-import { faEye } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PostHeader from "./PostCard/PostHeader";
@@ -48,22 +46,20 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   }, [showMediaPopup]);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md border border-gray-100">
-      {/* Image */}
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md border border-gray-100 flex flex-col h-full">
       {post.imagePath && (
-        <div className="relative w-full aspect-video bg-gray-100 cursor-pointer">
+        <div className="relative w-full aspect-video bg-gray-100 cursor-pointer overflow-hidden">
           <img
             src={post.imagePath}
             alt={post.title}
             onClick={toggleMediaPopup}
-            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
         </div>
       )}
 
-      {/* Content */}
-      <div className="p-5">
-        <div className="flex items-center gap-2 mb-3">
+      <div className="p-5 flex flex-col flex-grow">
+        <div className="flex items-center justify-between mb-3">
           <span className="bg-indigo-50 text-indigo-600 text-xs font-medium px-2.5 py-1 rounded-full">
             {post.category}
           </span>
@@ -77,19 +73,25 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           {post.title}
         </h3>
 
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-          {post.textContent}
-          <Link
-            to={`/post/${post._id}`}
-            className="text-indigo-600 hover:text-indigo-800 ml-1 inline-flex items-center text-sm font-medium"
-          >
-            Read more
-            <FontAwesomeIcon icon={faEye} className="ml-1" />
-          </Link>
-        </p>
+        <div className="flex-grow">
+          <p className="text-gray-600 text-sm mb-4">
+            {post.textContent.length > 150 ? (
+              <>
+                {post.textContent.slice(0, 100)}...
+                <Link
+                  to={`/post/${post._id}`}
+                  className="text-indigo-600 hover:text-indigo-800 ml-1"
+                >
+                  Read more
+                </Link>
+              </>
+            ) : (
+              post.textContent
+            )}
+          </p>
+        </div>
       </div>
 
-      {/* Media Popup */}
       {showMediaPopup && post.imagePath && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
           <div
