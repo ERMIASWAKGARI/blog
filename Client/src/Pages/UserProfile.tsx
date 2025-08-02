@@ -333,9 +333,6 @@ const UserProfile: React.FC = () => {
               </div>
             </div>
             <div className="flex-1">
-              <h2 className="text-3xl font-bold mb-8 text-center lg:text-left text-gray-800">
-                User Posts
-              </h2>
               <div className="bg-white rounded-lg overflow-hidden shadow-lg border border-gray-300">
                 {successMessage && (
                   <SuccessMessage
