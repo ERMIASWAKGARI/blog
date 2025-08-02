@@ -71,21 +71,46 @@ const UserPosts: React.FC<{
 
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           {posts.length > 0 && (
-            <Link
-              to="/profile/addPost"
-              className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              <FaPlus /> New Post
-            </Link>
-          )}
+            <>
+              <Link
+                to="/profile/addPost"
+                className="flex items-center justify-center gap-2
+                   bg-gradient-to-r from-indigo-600 to-purple-600
+                   hover:from-indigo-700 hover:to-purple-700
+                   text-white font-medium text-sm
+                   px-4 py-2.5 rounded-lg
+                   shadow-sm hover:shadow-md
+                   transition-all duration-200 scale-[0.95] hover:scale-[1]"
+              >
+                <FaPlus className="h-4 w-4" />
+                <span>New Post</span>
+              </Link>
 
-          {posts.length > 0 && (
-            <button
-              onClick={() => setConfirmDeleteAll(true)}
-              className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              <FaTrash /> Clear All
-            </button>
+              <button
+                onClick={() => setConfirmDeleteAll(true)}
+                className="flex items-center justify-center gap-2
+                   bg-red-500 hover:bg-red-600
+                   text-white font-medium text-sm
+                   px-4 py-2.5 rounded-lg
+                   shadow-sm hover:shadow-md
+                   transition-all duration-200 scale-[0.95] hover:scale-[1]"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>{" "}
+                <span>Clear All</span>
+              </button>
+            </>
           )}
         </div>
       </div>
