@@ -129,92 +129,99 @@ const LatestPosts: React.FC = () => {
         </motion.div>
 
         {loading && currentPage === 1 ? (
-          <div className="flex justify-center items-center min-h-[400px]">
+          <div className="relative flex justify-center items-center min-h-[400px]">
             <LoadingSpinner loading={loading} />
           </div>
         ) : (
           <>
-            <motion.div
-              variants={container}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: "-100px" }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            >
-              {posts.length === 0 ? (
-                <p className="text-center text-gray-500 col-span-3">
-                  No posts available.
-                </p>
-              ) : (
-                posts.map((post) => (
-                  <motion.article
-                    key={post._id}
-                    variants={item}
-                    whileHover="hover"
-                    className="group relative bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100"
-                    onClick={() => handlePostClick(post)}
-                  >
-                    <div className="relative h-60 overflow-hidden">
-                      {post.imagePath && !post.videoContent && (
-                        <img
-                          src={post.imagePath}
-                          alt={post.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          loading="lazy"
-                        />
-                      )}
-                      {post.videoContent && (
-                        <video
-                          src={post.videoContent}
-                          controls
-                          className="w-full h-full object-cover"
-                        />
-                      )}
-                      <span className="absolute top-4 left-4 bg-purple-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
-                        {post.category}
-                      </span>
-                    </div>
-
-                    <div className="p-6">
-                      <div className="flex items-center space-x-2 text-sm text-gray-500 mb-3">
-                        <div className="flex items-center">
-                          <FaUser className="text-purple-500 mr-1" />
-                          <span>{post.author}</span>
-                        </div>
-                        <span>•</span>
-                        <div className="flex items-center">
-                          <FaClock className="text-purple-500 mr-1" />
-                          <span>{moment(post.createdAt).fromNow()}</span>
-                        </div>
+            <div className="relative">
+              <motion.div
+                variants={container}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, margin: "-100px" }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              >
+                {posts.length === 0 ? (
+                  <p className="text-center text-gray-500 col-span-3">
+                    No posts available.
+                  </p>
+                ) : (
+                  posts.map((post) => (
+                    <motion.article
+                      key={post._id}
+                      variants={item}
+                      whileHover="hover"
+                      className="group relative bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100"
+                      onClick={() => handlePostClick(post)}
+                    >
+                      <div className="relative h-60 overflow-hidden">
+                        {post.imagePath && !post.videoContent && (
+                          <img
+                            src={post.imagePath}
+                            alt={post.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy"
+                          />
+                        )}
+                        {post.videoContent && (
+                          <video
+                            src={post.videoContent}
+                            controls
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                        <span className="absolute top-4 left-4 bg-purple-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+                          {post.category}
+                        </span>
                       </div>
 
-                      <h3 className="text-xl font-semibold text-gray-800 mb-3 line-clamp-2">
-                        {post.title}
-                      </h3>
-                      <p className="text-gray-600 mb-4 line-clamp-3">
-                        {post.textContent}
-                      </p>
+                      <div className="p-6">
+                        <div className="flex items-center space-x-2 text-sm text-gray-500 mb-3">
+                          <div className="flex items-center">
+                            <FaUser className="text-purple-500 mr-1" />
+                            <span>{post.author}</span>
+                          </div>
+                          <span>•</span>
+                          <div className="flex items-center">
+                            <FaClock className="text-purple-500 mr-1" />
+                            <span>{moment(post.createdAt).fromNow()}</span>
+                          </div>
+                        </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                        <div className="flex items-center space-x-1 text-sm text-gray-600">
-                          <FaStar className="text-yellow-400" />
-                          <span>
-                            {post.averageRating?.toFixed(1) || "0.0"}
-                            <span className="text-gray-400 ml-1">
-                              ({post.ratingQuantity || 0})
+                        <h3 className="text-xl font-semibold text-gray-800 mb-3 line-clamp-2">
+                          {post.title}
+                        </h3>
+                        <p className="text-gray-600 mb-4 line-clamp-3">
+                          {post.textContent}
+                        </p>
+
+                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                          <div className="flex items-center space-x-1 text-sm text-gray-600">
+                            <FaStar className="text-yellow-400" />
+                            <span>
+                              {post.averageRating?.toFixed(1) || "0.0"}
+                              <span className="text-gray-400 ml-1">
+                                ({post.ratingQuantity || 0})
+                              </span>
                             </span>
-                          </span>
-                        </div>
-                        <div className="flex items-center text-purple-600 font-medium text-sm group-hover:text-purple-800 transition-colors">
-                          Read more
-                          <FiArrowRight className="ml-1 transition-transform group-hover:translate-x-1" />
+                          </div>
+                          <div className="flex items-center text-purple-600 font-medium text-sm group-hover:text-purple-800 transition-colors">
+                            Read more
+                            <FiArrowRight className="ml-1 transition-transform group-hover:translate-x-1" />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </motion.article>
-                ))
+                    </motion.article>
+                  ))
+                )}
+              </motion.div>
+
+              {/* 🔒 Scoped overlay spinner for pagination loads (page > 1) */}
+              {loading && currentPage > 1 && (
+                <LoadingSpinner loading={loading} />
               )}
-            </motion.div>
+            </div>
 
             {hasMore && (
               <motion.div
