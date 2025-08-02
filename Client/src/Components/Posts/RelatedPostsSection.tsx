@@ -1,37 +1,39 @@
-import moment from 'moment'
-import React, { useEffect, useState } from 'react'
-import { BsArrowRight } from 'react-icons/bs'
-import { Link } from 'react-router-dom'
-import { Post } from '../../Pages/PostDetail'
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { BsArrowRight } from "react-icons/bs";
+import { Link } from "react-router-dom";
+import { Post } from "../../Pages/PostDetail";
 
 interface RelatedPostsProps {
-  relatedPosts: Post[]
-  category: string
+  relatedPosts: Post[];
+  category: string;
 }
 
 const RelatedPostsSection: React.FC<RelatedPostsProps> = ({ relatedPosts }) => {
-  const [displayedRelatedPosts, setDisplayedRelatedPosts] = useState<Post[]>([])
+  const [displayedRelatedPosts, setDisplayedRelatedPosts] = useState<Post[]>(
+    []
+  );
 
   useEffect(() => {
     if (relatedPosts.length > 0) {
-      setDisplayedRelatedPosts(relatedPosts.slice(0, 6))
+      setDisplayedRelatedPosts(relatedPosts.slice(0, 6));
     }
-  }, [relatedPosts])
+  }, [relatedPosts]);
 
   const loadMoreRelatedPosts = () => {
     const nextPosts = relatedPosts.slice(
       displayedRelatedPosts.length,
       displayedRelatedPosts.length + 6
-    )
-    setDisplayedRelatedPosts([...displayedRelatedPosts, ...nextPosts])
-  }
+    );
+    setDisplayedRelatedPosts([...displayedRelatedPosts, ...nextPosts]);
+  };
 
   return (
     <div className="bg-white shadow-md rounded-lg p-6">
       <h2 className="text-xl font-bold mb-4 text-gray-800">Related Posts</h2>
       <div
         className="overflow-y-auto max-h-80 md:max-h-96"
-        style={{ maxHeight: '320px' }}
+        style={{ maxHeight: "320px" }}
       >
         {displayedRelatedPosts.map((relatedPost) => (
           <div key={relatedPost._id} className="mb-4 flex">
@@ -50,7 +52,7 @@ const RelatedPostsSection: React.FC<RelatedPostsProps> = ({ relatedPosts }) => {
                 {relatedPost.title}
               </Link>
               <p className="text-gray-500 text-sm">
-                {moment(relatedPost.createdAt).format('MMMM Do YYYY')}
+                {moment(relatedPost.createdAt).fromNow()}
               </p>
             </div>
           </div>
@@ -67,7 +69,7 @@ const RelatedPostsSection: React.FC<RelatedPostsProps> = ({ relatedPosts }) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default RelatedPostsSection
+export default RelatedPostsSection;
