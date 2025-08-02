@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
+import { FaCheck } from "react-icons/fa";
 
 interface PasswordChangeFormProps {
   currentUser: any;
@@ -18,78 +19,105 @@ const PasswordChangeForm: React.FC<PasswordChangeFormProps> = ({
   formData,
   fieldErrors,
 }) => (
-  <form onSubmit={(e) => handleSubmit(e, "password")} className="px-6 py-4">
-    <div className="mb-4">
-      <label className="block text-gray-700 text-sm font-bold mb-2">
-        Old Password
-      </label>
-      <input
-        type="password"
-        name="oldPassword"
-        value={formData.oldPassword || ""}
-        onChange={handleChange}
-        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-          fieldErrors.oldPassword ? "border-red-500" : ""
-        }`}
-        required
-      />
-      {fieldErrors.oldPassword && (
-        <p className="text-red-500 text-xs italic">{fieldErrors.oldPassword}</p>
-      )}
-    </div>
-    <div className="mb-4">
-      <label className="block text-gray-700 text-sm font-bold mb-2">
-        New Password
-      </label>
-      <input
-        type="password"
-        name="newPassword"
-        value={formData.newPassword || ""}
-        onChange={handleChange}
-        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-          fieldErrors.newPassword ? "border-red-500" : ""
-        }`}
-        required
-      />
-      {fieldErrors.newPassword && (
-        <p className="text-red-500 text-xs italic">{fieldErrors.newPassword}</p>
-      )}
-    </div>
-    <div className="mb-4">
-      <label className="block text-gray-700 text-sm font-bold mb-2">
-        Confirm New Password
-      </label>
-      <input
-        type="password"
-        name="passwordConfirm"
-        value={formData.passwordConfirm || ""}
-        onChange={handleChange}
-        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-          fieldErrors.passwordConfirm ? "border-red-500" : ""
-        }`}
-        required
-      />
-      {fieldErrors.passwordConfirm && (
-        <p className="text-red-500 text-xs italic">
-          {fieldErrors.passwordConfirm}
-        </p>
-      )}
-    </div>
-    <div className="flex items-center justify-between">
-      <button
-        type="submit"
-        className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white py-1 px-3 mt-2 rounded-full shadow-md transition duration-300 disabled:opacity-50"
-        style={{ minWidth: "100px" }}
-      >
-        Save
-      </button>
-      <button
-        type="button"
-        onClick={() => handleEdit(null)}
-        className="text-gray-500 hover:text-gray-800"
-      >
-        Cancel
-      </button>
+  <form
+    onSubmit={(e) => handleSubmit(e, "password")}
+    className="p-6 bg-white rounded-xl shadow-sm border border-gray-100"
+  >
+    <h3 className="text-lg font-medium text-gray-900 mb-6">Change Password</h3>
+
+    <div className="space-y-5">
+      {/* Old Password */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Current Password
+        </label>
+        <div className="relative">
+          <input
+            type="password"
+            name="oldPassword"
+            value={formData.oldPassword || ""}
+            onChange={handleChange}
+            className={`block w-full px-4 py-2 border ${
+              fieldErrors.oldPassword ? "border-red-300" : "border-gray-300"
+            } rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all`}
+            required
+            placeholder="Enter current password"
+          />
+          {fieldErrors.oldPassword && (
+            <p className="mt-1 text-sm text-red-600 animate-fade-in">
+              {fieldErrors.oldPassword}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* New Password */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          New Password
+        </label>
+        <div className="relative">
+          <input
+            type="password"
+            name="newPassword"
+            value={formData.newPassword || ""}
+            onChange={handleChange}
+            className={`block w-full px-4 py-2 border ${
+              fieldErrors.newPassword ? "border-red-300" : "border-gray-300"
+            } rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all`}
+            required
+            placeholder="Enter new password"
+          />
+          {fieldErrors.newPassword && (
+            <p className="mt-1 text-sm text-red-600 animate-fade-in">
+              {fieldErrors.newPassword}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Confirm Password */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Confirm New Password
+        </label>
+        <div className="relative">
+          <input
+            type="password"
+            name="passwordConfirm"
+            value={formData.passwordConfirm || ""}
+            onChange={handleChange}
+            className={`block w-full px-4 py-2 border ${
+              fieldErrors.passwordConfirm ? "border-red-300" : "border-gray-300"
+            } rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all`}
+            required
+            placeholder="Confirm new password"
+          />
+          {fieldErrors.passwordConfirm && (
+            <p className="mt-1 text-sm text-red-600 animate-fade-in">
+              {fieldErrors.passwordConfirm}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex justify-end space-x-3 pt-2">
+        <button
+          type="button"
+          onClick={() => handleEdit(null)}
+          className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+          <FaCheck className="mr-2" />
+          Update Password
+        </button>
+      </div>
     </div>
   </form>
 );

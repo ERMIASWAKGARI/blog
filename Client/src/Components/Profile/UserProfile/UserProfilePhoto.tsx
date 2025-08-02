@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react'
-import { IconType } from 'react-icons'
-
-import femaleDefault from '../../../../public/jane_smith.png'
-import maleDefault from '../../../../public/john_doe.png'
+import React from "react";
+import { IconType } from "react-icons";
+import femaleDefault from "../../../../public/jane_smith.png";
+import maleDefault from "../../../../public/john_doe.png";
 
 interface UserProfilePhotoProps {
-  currentUser: any
-  editField: string | null
-  handleEdit: (field: string) => void
-  handlePhotoChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  handleSubmit: (e: React.FormEvent, field: string) => void
-  icon: IconType
+  currentUser: any;
+  editField: string | null;
+  handleEdit: (field: string) => void;
+  handlePhotoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSubmit: (e: React.FormEvent, field: string) => void;
+  icon: IconType;
 }
 
 const UserProfilePhoto: React.FC<UserProfilePhotoProps> = ({
@@ -22,59 +21,99 @@ const UserProfilePhoto: React.FC<UserProfilePhotoProps> = ({
   handleSubmit,
   icon: Icon,
 }) => {
-  const gradientBg = 'bg-gradient-to-b from-blue-400 to-indigo-500'
-
   const photoSrc = currentUser?.photo
     ? `${currentUser.photo}`
-    : currentUser.gender === 'female'
+    : currentUser.gender === "female"
     ? femaleDefault
-    : maleDefault
+    : maleDefault;
+
+  const isEditing = editField === "photo";
 
   return (
-    <form onSubmit={(e) => handleSubmit(e, 'photo')} className="px-6 py-4">
-      <div className={`mb-4 ${gradientBg} rounded-lg p-4 relative`}>
-        <label className=" text-gray-700 text-sm font-bold mb-2 flex items-center justify-between">
-          <span className="flex items-center text-white">
-            <Icon className="mr-2 text-white" />
-          </span>
-          {editField !== 'photo' && (
-            <button
-              type="button"
-              onClick={() => handleEdit('photo')}
-              className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white py-1 px-3 rounded-full shadow-md transition duration-300 disabled:opacity-50"
-              style={{ minWidth: '100px', zIndex: 10 }}
-            >
-              Change Photo
-            </button>
-          )}
-        </label>
-        <div className="flex justify-center">
-          <img
-            src={photoSrc}
-            alt="User Avatar"
-            className="h-32 w-32 rounded-full mx-auto mt-4"
-          />
+    <form
+      onSubmit={(e) => handleSubmit(e, "photo")}
+      className="p-6 bg-white rounded-xl shadow-sm border border-gray-100"
+    >
+      <div className="flex flex-col items-center space-y-4">
+        {/* Header */}
+        <div className="w-full flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <Icon className="h-5 w-5 text-indigo-500" />
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+              Profile Photo
+            </h3>
+          </div>
         </div>
-        {editField === 'photo' && (
-          <>
-            <input
-              type="file"
-              name="photo"
-              onChange={handlePhotoChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-4"
+
+        {/* Avatar */}
+        <div className="relative group">
+          <div className="h-32 w-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
+            <img
+              src={photoSrc}
+              alt="User Avatar"
+              className="h-full w-full object-cover"
             />
-            <button
-              type="submit"
-              className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white py-1 px-3 mt-2 rounded-full shadow-md transition duration-300 disabled:opacity-50"
-              style={{ minWidth: '100px', zIndex: 10 }}
-            >
-              Save
-            </button>
-          </>
+          </div>
+
+          {!isEditing && (
+            <div className="absolute inset-0 bg-black bg-opacity-30 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+              <button
+                type="button"
+                onClick={() => handleEdit("photo")}
+                className="text-white p-2 rounded-full hover:bg-white hover:bg-opacity-20"
+                aria-label="Change profile photo"
+              >
+                <Icon className="h-5 w-5" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Edit Mode */}
+        {isEditing && (
+          <div className="w-full space-y-4 animate-fade-in">
+            <div className="flex flex-col space-y-2">
+              <label
+                htmlFor="photo-upload"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Upload new photo
+              </label>
+              <input
+                id="photo-upload"
+                type="file"
+                name="photo"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="block w-full text-sm text-gray-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-lg file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-indigo-50 file:text-indigo-700
+                  hover:file:bg-indigo-100"
+              />
+            </div>
+
+            <div className="flex justify-end space-x-3 pt-2">
+              <button
+                type="button"
+                onClick={() => handleEdit("")}
+                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </form>
-  )
-}
+  );
+};
 
-export default UserProfilePhoto
+export default UserProfilePhoto;
