@@ -107,6 +107,7 @@ const CreatePost: React.FC = () => {
           {error && (
             <ErrorMessage message={error} onClose={handleErrorMessageClose} />
           )}
+
           {message && (
             <SuccessMessage
               message={message}
