@@ -1,49 +1,33 @@
-import { faEye } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import CardMedia from '@mui/material/CardMedia'
-import Typography from '@mui/material/Typography'
-import React, { useEffect, useRef, useState } from 'react'
-import { FaArrowLeft, FaArrowRight, FaRegBookmark } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
-import AuthorInfo from './PostCard/AuthorInfo'
-import MediaPopup from './PostCard/MediaPopup'
-import PostHeader from './PostCard/PostHeader'
-
-import generic_image from '../../public/generic_user_place_holder.jpg'
+import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
+import PostHeader from "./PostCard/PostHeader";
 
 interface Post {
-  _id: string
-  title: string
-  author: string
-  textContent: string
-  imagePath?: string
-  videoContent?: string
-  createdAt: string
-  category: string
-  authorImage: string
-  ratingQuantity: number
-  averageRating: number
+  _id: string;
+  title: string;
+  author: string;
+  textContent: string;
+  imagePath?: string;
+  createdAt: string;
+  category: string;
+  authorImage: string;
+  ratingQuantity: number;
+  averageRating: number;
 }
 
 interface PostCardProps {
-  post: Post
+  post: Post;
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
-  const [showMediaPopup, setShowMediaPopup] = useState(false)
-  const [popupMedia, setPopupMedia] = useState<string | null>(null)
-  const [popupMediaType, setPopupMediaType] = useState<
-    'image' | 'video' | null
-  >(null)
-  const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
-  const popupRef = useRef<HTMLDivElement>(null)
+  const [showMediaPopup, setShowMediaPopup] = useState(false);
+  const popupRef = useRef<HTMLDivElement>(null);
 
-  const mediaItems = [
-    { type: 'image', url: post.imagePath },
-    { type: 'video', url: post.videoContent },
-  ]
+  const toggleMediaPopup = () => {
+    setShowMediaPopup(!showMediaPopup);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -51,147 +35,98 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         popupRef.current &&
         !popupRef.current.contains(event.target as Node)
       ) {
-        closeMediaPopup()
+        setShowMediaPopup(false);
       }
+    };
+
+    if (showMediaPopup) {
+      document.addEventListener("mousedown", handleClickOutside);
     }
-    if (showMediaPopup)
-      document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [showMediaPopup])
-
-  const openMediaPopup = (mediaUrl: string, type: string) => {
-    setPopupMedia(mediaUrl)
-    setPopupMediaType(type as 'image' | 'video')
-    setShowMediaPopup(true)
-  }
-
-  const closeMediaPopup = () => {
-    setShowMediaPopup(false)
-    setPopupMedia(null)
-    setPopupMediaType(null)
-  }
-
-  const handlePreviousMedia = () => {
-    setCurrentMediaIndex((prev) => Math.max(prev - 1, 0))
-  }
-
-  const handleNextMedia = () => {
-    setCurrentMediaIndex((prev) => Math.min(prev + 1, mediaItems.length - 1))
-  }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showMediaPopup]);
 
   return (
-    <Card className="rounded-2xl overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg bg-white">
-      <div className="relative w-full pt-[56.25%] bg-gray-100 overflow-hidden group">
-        {mediaItems.length > 0 && (
-          <CardMedia
-            component={
-              mediaItems[currentMediaIndex].type === 'image' ? 'img' : 'video'
-            }
-            image={mediaItems[currentMediaIndex].url}
-            title={post.title}
-            onClick={() =>
-              openMediaPopup(
-                mediaItems[currentMediaIndex].url ?? '',
-                mediaItems[currentMediaIndex].type
-              )
-            }
-            className="absolute top-0 left-0 w-full h-full object-cover cursor-pointer transition-transform duration-300 group-hover:scale-105"
-            controls={mediaItems[currentMediaIndex].type === 'video'}
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md border border-gray-100">
+      {/* Image */}
+      {post.imagePath && (
+        <div className="relative w-full aspect-video bg-gray-100 cursor-pointer">
+          <img
+            src={post.imagePath}
+            alt={post.title}
+            onClick={toggleMediaPopup}
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
-        )}
-        {mediaItems.length > 1 && (
-          <div className="absolute top-1/2 left-0 w-full flex justify-between px-4 z-10 transform -translate-y-1/2">
-            <FaArrowLeft
-              onClick={handlePreviousMedia}
-              className={`bg-white/70 hover:bg-white text-gray-700 rounded-full p-2 cursor-pointer shadow-md transition ${
-                currentMediaIndex === 0
-                  ? 'opacity-0 pointer-events-none'
-                  : 'opacity-100'
-              }`}
-              size={28}
-            />
-            <FaArrowRight
-              onClick={handleNextMedia}
-              className={`bg-white/70 hover:bg-white text-gray-700 rounded-full p-2 cursor-pointer shadow-md transition ${
-                currentMediaIndex === mediaItems.length - 1
-                  ? 'opacity-0 pointer-events-none'
-                  : 'opacity-100'
-              }`}
-              size={28}
-            />
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      <CardContent className="p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <FaRegBookmark className="text-purple-500" />
-          <span className="bg-purple-100 text-purple-600 text-xs font-semibold px-3 py-1 rounded-full uppercase">
+      {/* Content */}
+      <div className="p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="bg-indigo-50 text-indigo-600 text-xs font-medium px-2.5 py-1 rounded-full">
             {post.category}
           </span>
+          <PostHeader
+            ratingQuantity={post.ratingQuantity}
+            averageRating={post.averageRating}
+          />
         </div>
 
-        <Typography variant="h6" className="font-bold mb-1 text-gray-800">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
           {post.title}
-        </Typography>
+        </h3>
 
-        <Typography variant="body2" className="text-gray-600 leading-snug">
-          {post.textContent.length > 50 ? (
-            <>
-              {post.textContent.substring(0, 50)}...
-              <Link
-                to={`/post/${post._id}`}
-                className="text-purple-500 ml-1 inline-flex items-center font-medium hover:underline"
-              >
-                <FontAwesomeIcon icon={faEye} className="mr-1" />
-                See more
-              </Link>
-            </>
-          ) : (
-            post.textContent
-          )}
-        </Typography>
-      </CardContent>
-
-      <div className="px-4 pb-4">
-        <PostHeader
-          ratingQuantity={post.ratingQuantity}
-          averageRating={post.averageRating}
-        />
-        <AuthorInfo
-          author={post.author}
-          authorImage={generic_image}
-          createdAt={post.createdAt}
-        />
+        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+          {post.textContent}
+          <Link
+            to={`/post/${post._id}`}
+            className="text-indigo-600 hover:text-indigo-800 ml-1 inline-flex items-center text-sm font-medium"
+          >
+            Read more
+            <FontAwesomeIcon icon={faEye} className="ml-1" />
+          </Link>
+        </p>
       </div>
 
-      <MediaPopup
-        showMediaPopup={showMediaPopup}
-        popupRef={popupRef}
-        closeMediaPopup={closeMediaPopup}
-        renderMediaContent={() => {
-          if (popupMediaType === 'image') {
-            return (
+      {/* Media Popup */}
+      {showMediaPopup && post.imagePath && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+          <div
+            ref={popupRef}
+            className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-xl"
+          >
+            <div className="relative w-full h-full">
               <img
-                src={popupMedia ?? ''}
-                alt="Popup"
-                className="w-full h-full object-contain rounded-lg"
+                src={post.imagePath}
+                alt={post.title}
+                className="w-full h-full object-contain max-h-[80vh]"
               />
-            )
-          } else if (popupMediaType === 'video') {
-            return (
-              <video
-                src={popupMedia ?? ''}
-                className="w-full h-full object-contain rounded-lg"
-                controls
-              />
-            )
-          }
-          return null
-        }}
-      />
-    </Card>
-  )
-}
+              <button
+                onClick={toggleMediaPopup}
+                className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-gray-700"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
-export default PostCard
+export default PostCard;

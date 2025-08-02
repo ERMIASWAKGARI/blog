@@ -12,6 +12,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 
 import generic_image from "../../public/generic_user_place_holder.jpg";
 import api from "../axiosConfig";
+import moment from "moment";
 
 export interface Post {
   _id: string;
@@ -156,7 +157,7 @@ const PostDetail: React.FC = () => {
             <div>
               <p className="text-gray-600">{post.author}</p>
               <p className="text-gray-500 text-sm">
-                {new Date(post.createdAt).toLocaleDateString()}
+                {moment(post.createdAt).fromNow()}
               </p>
             </div>
           </div>

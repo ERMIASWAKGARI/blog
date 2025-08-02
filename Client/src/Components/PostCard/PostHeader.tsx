@@ -12,12 +12,19 @@ const PostHeader: React.FC<PostHeaderProps> = ({
   averageRating,
 }) => {
   return (
-    <div className="flex justify-between items-center  p-4">
-      <div className="flex items-center text-sm text-gray-600">
-        <FontAwesomeIcon icon={faStar} className="mr-1 text-yellow-500" />
-        <span className="mr-2">{ratingQuantity} ratings</span>
-        <FontAwesomeIcon icon={faStar} className="mr-1 text-yellow-500" />
-        <span>Average rating: {averageRating.toFixed(1)}</span>
+    <div className="flex items-center space-x-4 text-sm text-gray-600">
+      <div className="flex items-center">
+        <FontAwesomeIcon
+          icon={faStar}
+          className="text-yellow-400 w-4 h-4 mr-1"
+        />
+        <span className="font-medium text-gray-700">
+          {averageRating.toFixed(1)}
+        </span>
+        <span className="mx-1 text-gray-400">|</span>
+        <span className="text-gray-500">
+          {ratingQuantity} {ratingQuantity === 1 ? "rating" : "ratings"}
+        </span>
       </div>
     </div>
   );
