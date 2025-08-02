@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { MdEmail, MdLock } from "react-icons/md";
@@ -79,7 +80,7 @@ const Login: React.FC = () => {
 
           {showSuccessMessage && (
             <SuccessMessage
-              message={result}
+              message="Logged in successfully!"
               onClose={() => setShowSuccessMessage(false)}
             />
           )}
