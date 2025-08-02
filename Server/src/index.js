@@ -23,9 +23,12 @@ app.use(
       "http://localhost:5173",
       "https://blog-peach-three-24.vercel.app",
     ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
+    preflightContinue: false,
   })
 );
+app.optioedins("*", cors()); // Handle preflight requests
 
 // Configure Express to serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, "../public")));
