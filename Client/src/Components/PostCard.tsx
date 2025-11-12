@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaExternalLinkAlt, FaStar, FaTimes, FaExpand } from "react-icons/fa";
 import PostHeader from "./PostCard/PostHeader";
+import generic_image from "../../public/generic_user_place_holder.jpg";
 
 interface Post {
   _id: string;
@@ -235,7 +236,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           <div className="flex items-center justify-between pt-4 border-t border-gray-100">
             <div className="flex items-center space-x-3">
               <img
-                src={post.authorImage}
+                src={post?.authorImage || generic_image}
                 alt={post.author}
                 className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
               />
