@@ -28,7 +28,6 @@ app.use(
     preflightContinue: false,
   })
 );
-app.optioedins("*", cors()); // Handle preflight requests
 
 // Configure Express to serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, "../public")));

@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { FaArrowLeft, FaArrowRight, FaEdit, FaTrash } from "react-icons/fa";
-import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
+import { FaArrowLeft, FaEdit, FaTrash, FaImage, FaVideo } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../Components/AuthenticatedNavbar";
 import Rating from "../Components/Posts/Rating";
 import RelatedPostsSection from "../Components/Posts/RelatedPostsSection";
 import SuccessMessage from "../Components/Profile/UserProfile/SuccessMessage";
 import { useUser } from "../UserContext";
-import ClipLoader from "react-spinners/ClipLoader";
+import { ClipLoader } from "react-spinners";
 
 import generic_image from "../../public/generic_user_place_holder.jpg";
 import api from "../axiosConfig";
@@ -37,45 +35,55 @@ const PostDetail: React.FC = () => {
   const navigate = useNavigate();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [mediaType, setMediaType] = useState<"image" | "video" | null>("image");
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const [activeMediaType, setActiveMediaType] = useState<"image" | "video">(
+    "image"
+  );
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
+        setLoading(true);
         const response = await api.get(`/post/getPost/${postId}`);
+        const postData = response.data.data.post;
+        setPost(postData);
 
-        setPost(response.data.data.post);
-        fetchRelatedPosts(response.data.data.post.category);
+        // Fetch related posts from the same category, excluding current post
+        await fetchRelatedPosts(postData.category, postData._id);
 
-        window.scrollTo(0, 0);
+        window.scrollTo({ top: 0, behavior: "smooth" });
       } catch (error) {
         console.error("Error fetching post:", error);
+        setSuccessMessage("Error loading post. Please try again.");
       } finally {
         setLoading(false);
       }
     };
 
-    const fetchRelatedPosts = async (category: string) => {
+    const fetchRelatedPosts = async (
+      category: string,
+      excludePostId: string
+    ) => {
       try {
-        let url = `/post/getAllposts`;
-        if (category && category !== "All") {
-          url += `?category=${category}`;
-        }
+        const response = await api.get(
+          `/post/getAllposts?category=${category}&limit=10`
+        );
+        const posts = response.data.data;
 
-        const response = await api.get(url);
-        const data = await response.data;
+        // Filter out current post and limit to 6 related posts
+        const filteredPosts = posts
+          .filter((p: Post) => p._id !== excludePostId)
+          .slice(0, 6);
 
-        if (response.status === 200) {
-          setRelatedPosts(data.data);
-        } else {
-          console.error("Error fetching related posts:", data.message);
-        }
+        setRelatedPosts(filteredPosts);
       } catch (error) {
         console.error("Error fetching related posts:", error);
       }
     };
 
-    fetchPost();
+    if (postId) {
+      fetchPost();
+    }
   }, [postId]);
 
   const handleEdit = (postId: string) => {
@@ -85,180 +93,299 @@ const PostDetail: React.FC = () => {
   const handleDelete = async (postId: string) => {
     try {
       await api.delete(`/post/deletePost/${postId}`);
-
       setPostToDelete(null);
       setSuccessMessage("Post deleted successfully!");
       setTimeout(() => {
         navigate(-1);
-      }, 3000);
+      }, 2000);
     } catch (error) {
       console.error("Error deleting post:", error);
+      setSuccessMessage("Error deleting post. Please try again.");
     }
   };
+
+  const images = post?.imagePath
+    ? post.imagePath.split(",").filter((img) => img.trim())
+    : [];
+  const videos = post?.videoContent
+    ? post.videoContent.split(",").filter((vid) => vid.trim())
+    : [];
+
+  const hasImages = images.length > 0;
+  const hasVideos = videos.length > 0;
+  const hasMultipleImages = images.length > 1;
+  const hasMultipleVideos = videos.length > 1;
 
   const isAuthor = user && user.name === post?.author;
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
         <Navbar />
-        <div className="flex justify-center items-center min-h-[calc(100vh-4rem)] pt-12">
-          <ClipLoader size={60} color="#7e22ce" />
+        <div className="flex justify-center items-center min-h-[calc(100vh-4rem)]">
+          <div className="text-center">
+            <ClipLoader size={60} color="#7e22ce" />
+            <p className="mt-4 text-gray-600">Loading post...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   if (!post) {
-    return <div>Post not found</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+        <Navbar />
+        <div className="flex justify-center items-center min-h-[calc(100vh-4rem)]">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              Post Not Found
+            </h2>
+            <p className="text-gray-600 mb-6">
+              The post you're looking for doesn't exist.
+            </p>
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-6 py-3 rounded-xl hover:from-purple-600 hover:to-indigo-600 transition-all duration-300"
+            >
+              Go Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
-
-  const images = post.imagePath ? post.imagePath.split(",") : [];
-  const videos = post.videoContent ? post.videoContent.split(",") : [];
-  const hasImages = images.length > 0;
-  const hasVideos = videos.length > 0;
-
-  const useGallery = hasImages || hasVideos;
-
-  const toggleMediaType = () => {
-    setMediaType((prevType) => (prevType === "image" ? "video" : "image"));
-  };
 
   const paragraphs = post.textContent
     .split("\n")
     .filter((paragraph) => paragraph.trim() !== "");
 
+  const nextMedia = () => {
+    if (activeMediaType === "image" && hasMultipleImages) {
+      setCurrentMediaIndex((prev) => (prev + 1) % images.length);
+    } else if (activeMediaType === "video" && hasMultipleVideos) {
+      setCurrentMediaIndex((prev) => (prev + 1) % videos.length);
+    }
+  };
+
+  const prevMedia = () => {
+    if (activeMediaType === "image" && hasMultipleImages) {
+      setCurrentMediaIndex(
+        (prev) => (prev - 1 + images.length) % images.length
+      );
+    } else if (activeMediaType === "video" && hasMultipleVideos) {
+      setCurrentMediaIndex(
+        (prev) => (prev - 1 + videos.length) % videos.length
+      );
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Navbar />
-      <div className="container mx-auto p-8 max-w-5xl flex gap-5">
-        <div className="bg-white p-6 rounded-lg shadow-lg flex-1">
-          {successMessage && (
-            <SuccessMessage
-              message={successMessage}
-              onClose={() => setSuccessMessage(null)}
-            />
-          )}
-          <div className="mb-4 flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-800">{post.title}</h1>
-            <button
-              onClick={() => navigate(-1)}
-              className="text-gray-600 hover:text-gray-800"
-            >
-              <FaArrowLeft className="inline mr-2" /> Go Back
-            </button>
-          </div>
-          <div className="flex items-center mb-4">
-            <img
-              src={generic_image}
-              alt={post.author}
-              className="w-10 h-10 rounded-full mr-4"
-            />
-            <div>
-              <p className="text-gray-600">{post.author}</p>
-              <p className="text-gray-500 text-sm">
-                {moment(post.createdAt).fromNow()}
-              </p>
-            </div>
-          </div>
 
-          <div className="mb-4 relative">
-            {useGallery && (
-              <>
-                {mediaType === "image" && hasImages && (
-                  <Carousel
-                    additionalTransfrom={0}
-                    arrows={false}
-                    draggable={false}
-                    swipeable={false}
-                    slidesToSlide={1}
-                    responsive={{
-                      superLargeDesktop: {
-                        breakpoint: { max: 4000, min: 3000 },
-                        items: 1,
-                      },
-                      desktop: {
-                        breakpoint: { max: 3000, min: 1024 },
-                        items: 1,
-                      },
-                      tablet: {
-                        breakpoint: { max: 1024, min: 464 },
-                        items: 1,
-                      },
-                      mobile: {
-                        breakpoint: { max: 464, min: 0 },
-                        items: 1,
-                      },
-                    }}
-                  >
-                    {images.map((image, index) => (
-                      <img
-                        key={index}
-                        src={image}
-                        alt={`Post image ${index + 1}`}
-                        className="w-full h-auto rounded-lg shadow-md"
-                      />
-                    ))}
-                  </Carousel>
-                )}
-                {mediaType === "video" && hasVideos && (
-                  <video
-                    src={videos[0]}
-                    controls
-                    className="w-full h-auto rounded-lg shadow-md"
-                  />
-                )}
-                {hasImages && hasVideos && (
-                  <button
-                    className="absolute top-0 right-0 transform -translate-y-1/2 translate-x-1/2 bg-white bg-opacity-50 p-2 rounded-full"
-                    onClick={toggleMediaType}
-                  >
-                    {mediaType === "image" ? (
-                      <FaArrowRight className="text-gray-600" />
-                    ) : (
-                      <FaArrowLeft className="text-gray-600" />
-                    )}
-                  </button>
-                )}
-              </>
-            )}
-          </div>
-
-          <div className="text-gray-800">
-            <span className="text-xs text-white py-1 rounded-full px-4 bg-purple-500 uppercase font-semibold mr-2 ">
-              {post.category}
-            </span>
-            {paragraphs.map((paragraph, index) => (
-              <p key={index} className="mb-4">
-                {paragraph}
-              </p>
-            ))}
-          </div>
-          <div className="mt-4">
-            <Rating postId={postId} user={user} />
-          </div>
-
-          {isAuthor && (
-            <div className="mt-6 flex space-x-4">
-              <button
-                onClick={() => handleEdit(post._id)}
-                className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white py-1 px-3 rounded-full shadow-md transition duration-300 disabled:opacity-50 flex  justify-center items-center"
-              >
-                <FaEdit className="mr-2" /> Edit Post
-              </button>
-              <button
-                onClick={() => setPostToDelete(post._id)}
-                className="bg-red-500 text-white py-1 px-3 rounded-full hover:bg-red-600 shadow-md transition duration-300 flex justify-center items-center"
-              >
-                <FaTrash className="mr-2" /> Delete Post
-              </button>
-            </div>
-          )}
+      {/* Success Message */}
+      {successMessage && (
+        <div className="container mx-auto px-4 pt-6 max-w-6xl">
+          <SuccessMessage
+            message={successMessage}
+            onClose={() => setSuccessMessage(null)}
+          />
         </div>
+      )}
 
-        <div className="w-1/3">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h3 className="text-xl font-bold mb-4">Related Posts</h3>
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+              {/* Header */}
+              <div className="p-8 border-b border-gray-100">
+                <div className="flex items-center justify-between mb-6">
+                  <button
+                    onClick={() => navigate(-1)}
+                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors duration-300 group"
+                  >
+                    <FaArrowLeft className="group-hover:-translate-x-1 transition-transform duration-300" />
+                    <span>Back</span>
+                  </button>
+
+                  {isAuthor && (
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={() => handleEdit(post._id)}
+                        className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-4 py-2 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg"
+                      >
+                        <FaEdit className="w-4 h-4" />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        onClick={() => setPostToDelete(post._id)}
+                        className="flex items-center space-x-2 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white px-4 py-2 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg"
+                      >
+                        <FaTrash className="w-4 h-4" />
+                        <span>Delete</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
+                  {post.title}
+                </h1>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <img
+                      src={post.authorImage || generic_image}
+                      alt={post.author}
+                      className="w-12 h-12 rounded-full border-2 border-white shadow-md"
+                    />
+                    <div>
+                      <p className="font-semibold text-gray-800">
+                        {post.author}
+                      </p>
+                      <p className="text-gray-500 text-sm">
+                        {moment(post.createdAt).format("MMMM D, YYYY")}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-sm font-semibold px-4 py-2 rounded-full">
+                    {post.category}
+                  </span>
+                </div>
+              </div>
+
+              {/* Media Section */}
+              {(hasImages || hasVideos) && (
+                <div className="relative bg-gray-900">
+                  {/* Media Type Toggle */}
+                  {hasImages && hasVideos && (
+                    <div className="absolute top-4 right-4 z-10 bg-white/10 backdrop-blur-md rounded-xl p-1">
+                      <div className="flex space-x-1">
+                        <button
+                          onClick={() => setActiveMediaType("image")}
+                          className={`px-4 py-2 rounded-lg transition-all duration-300 ${
+                            activeMediaType === "image"
+                              ? "bg-white text-gray-900"
+                              : "text-white hover:bg-white/20"
+                          }`}
+                        >
+                          <FaImage className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setActiveMediaType("video")}
+                          className={`px-4 py-2 rounded-lg transition-all duration-300 ${
+                            activeMediaType === "video"
+                              ? "bg-white text-gray-900"
+                              : "text-white hover:bg-white/20"
+                          }`}
+                        >
+                          <FaVideo className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Media Display */}
+                  <div className="relative aspect-video flex items-center justify-center">
+                    {activeMediaType === "image" && hasImages && (
+                      <>
+                        <img
+                          src={images[currentMediaIndex]}
+                          alt={`${post.title} - Image ${currentMediaIndex + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+
+                        {/* Navigation Arrows */}
+                        {hasMultipleImages && (
+                          <>
+                            <button
+                              onClick={prevMedia}
+                              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition-all duration-300"
+                            >
+                              <FaArrowLeft className="w-5 h-5" />
+                            </button>
+                            <button
+                              onClick={nextMedia}
+                              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition-all duration-300"
+                            >
+                              <FaArrowLeft className="w-5 h-5 rotate-180" />
+                            </button>
+                          </>
+                        )}
+
+                        {/* Image Counter */}
+                        {hasMultipleImages && (
+                          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                            {currentMediaIndex + 1} / {images.length}
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {activeMediaType === "video" && hasVideos && (
+                      <>
+                        <video
+                          src={videos[currentMediaIndex]}
+                          controls
+                          className="w-full h-full object-contain bg-black"
+                        />
+
+                        {/* Navigation Arrows */}
+                        {hasMultipleVideos && (
+                          <>
+                            <button
+                              onClick={prevMedia}
+                              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition-all duration-300"
+                            >
+                              <FaArrowLeft className="w-5 h-5" />
+                            </button>
+                            <button
+                              onClick={nextMedia}
+                              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition-all duration-300"
+                            >
+                              <FaArrowLeft className="w-5 h-5 rotate-180" />
+                            </button>
+                          </>
+                        )}
+
+                        {/* Video Counter */}
+                        {hasMultipleVideos && (
+                          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                            {currentMediaIndex + 1} / {videos.length}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Content */}
+              <div className="p-8">
+                <div className="prose prose-lg max-w-none">
+                  {paragraphs.map((paragraph, index) => (
+                    <p
+                      key={index}
+                      className="text-gray-700 leading-relaxed mb-4 text-lg"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+
+                {/* Rating Section */}
+                <div className="mt-8 pt-8 border-t border-gray-100">
+                  <Rating postId={postId} user={user} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
             <RelatedPostsSection
               relatedPosts={relatedPosts}
               category={post.category}
@@ -267,26 +394,29 @@ const PostDetail: React.FC = () => {
         </div>
       </div>
 
+      {/* Delete Confirmation Modal */}
       {postToDelete && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm mx-auto">
-            <h2 className="text-xl font-semibold mb-4">Confirm Deletion</h2>
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in duration-300">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Delete Post
+            </h2>
             <p className="text-gray-600 mb-6">
               Are you sure you want to delete this post? This action cannot be
-              undone.
+              undone and all associated data will be permanently removed.
             </p>
-            <div className="flex justify-end">
+            <div className="flex space-x-4">
               <button
                 onClick={() => setPostToDelete(null)}
-                className="bg-gray-300 text-gray-800 py-2 px-4 rounded-full mr-4"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-xl transition-colors duration-300 font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleDelete(postToDelete)}
-                className="bg-red-500 text-white py-2 px-4 rounded-full"
+                className="flex-1 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white py-3 px-4 rounded-xl transition-all duration-300 font-semibold shadow-md hover:shadow-lg"
               >
-                Delete
+                Delete Post
               </button>
             </div>
           </div>

@@ -1,10 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import PostCard from "../PostCard";
-import { FaChevronLeft, FaChevronRight, FaSearch } from "react-icons/fa";
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaSearch,
+  FaFilter,
+} from "react-icons/fa";
 import { ClipLoader } from "react-spinners";
-
 import api from "../../axiosConfig";
 
 interface Post {
@@ -35,10 +38,10 @@ const categories = [
 ];
 
 const sortOptions = [
-  { label: "Date", value: "date" },
-  { label: "Rating", value: "rating" },
+  { label: "Latest", value: "date" },
+  { label: "Highest Rated", value: "rating" },
   { label: "Category", value: "category" },
-  { label: "Title", value: "title" },
+  { label: "Title A-Z", value: "title" },
 ];
 
 const PostsList: React.FC = () => {
@@ -73,19 +76,15 @@ const PostsList: React.FC = () => {
       setLoading(true);
       try {
         let url = `/post/getAllposts?page=${pageParam}&limit=9`;
-        if (categoryParam !== "All") {
-          url += `&category=${categoryParam}`;
-        }
+        if (categoryParam !== "All") url += `&category=${categoryParam}`;
         url += `&sort=${sortParam}`;
-        if (searchParam) {
-          url += `&search=${encodeURIComponent(searchParam)}`;
-        }
+        if (searchParam) url += `&search=${encodeURIComponent(searchParam)}`;
+
         const response = await api.get(url);
         const data = await response.data;
         setPosts(data.data);
         setTotalPages(Math.ceil(data.totalPosts / 9));
         setLoading(false);
-        scrollToTop();
       } catch (error) {
         console.error("Error fetching posts:", error);
         setLoading(false);
@@ -93,12 +92,6 @@ const PostsList: React.FC = () => {
     };
 
     fetchPostsFromUrl();
-
-    if (!location.search) {
-      scrollToTop();
-    } else {
-      scrollToPostList();
-    }
   }, [location.search]);
 
   const updateUrlParams = (
@@ -111,68 +104,56 @@ const PostsList: React.FC = () => {
     if (category !== "All") params.set("category", category);
     params.set("sort", sort);
     params.set("page", page.toString());
-    if (search) {
-      params.set("search", search);
-    }
-    navigate({
-      search: params.toString(),
-    });
+    if (search) params.set("search", search);
+
+    navigate({ search: params.toString() });
   };
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
     updateUrlParams(selectedCategory, sort, pageNumber, searchQuery);
-    scrollToTop();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      handlePageChange(currentPage - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      handlePageChange(currentPage + 1);
-    }
-  };
-
-  const handleCategoryClick = (category: string) => {
+  const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
     setCurrentPage(1);
     updateUrlParams(category, sort, 1, searchQuery);
     setIsCategoryDropdownOpen(false);
   };
 
-  const handleSortChange = (sortOption: string) => {
+  const handleSortSelect = (sortOption: string) => {
     setSort(sortOption);
     setCurrentPage(1);
     updateUrlParams(selectedCategory, sortOption, 1, searchQuery);
     setIsSortDropdownOpen(false);
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
-  };
-
   const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setCurrentPage(1);
     updateUrlParams(selectedCategory, sort, 1, searchQuery);
-    setSearchQuery("");
   };
 
   const renderPageNumbers = () => {
     const pageNumbers = [];
-    for (let i = 1; i <= totalPages; i++) {
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
       pageNumbers.push(
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`bg-white border border-purple-500 text-purple-500 py-2 px-4 rounded-full shadow-md transition duration-300 ${
+          className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
             currentPage === i
-              ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:from-purple-600 hover:to-indigo-600"
-              : "hover:bg-purple-500 hover:text-white"
+              ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg shadow-purple-500/25"
+              : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
           }`}
         >
           {i}
@@ -182,165 +163,202 @@ const PostsList: React.FC = () => {
     return pageNumbers;
   };
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const scrollToPostList = () => {
-    if (postListRef.current) {
-      postListRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   return (
-    <div ref={postListRef} className="p-4 md:p-8">
-      <div className="flex flex-col md:flex-row items-center justify-between gap-2 mb-8">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-1 space-y-4 md:space-y-0 md:space-x-8 w-full">
-          <div className="relative w-full">
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700 font-bold">Categories:</span>
-              <button
-                onClick={() =>
-                  setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
-                }
-                className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-semibold px-4 py-2 rounded-full w-full text-left flex justify-between items-center shadow-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-300"
-              >
-                {selectedCategory}{" "}
-                <svg
-                  className={`w-5 h-5 transform transition-transform ${
-                    isCategoryDropdownOpen ? "rotate-180" : "rotate-0"
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  ></path>
-                </svg>
-              </button>
-            </div>
-            {isCategoryDropdownOpen && (
-              <div className="absolute z-10 w-full mt-2 bg-white rounded-md shadow-lg border border-gray-300">
-                <ul className="py-2">
-                  {categories.map((category) => (
-                    <li
-                      key={category}
-                      onClick={() => handleCategoryClick(category)}
-                      className={`cursor-pointer px-4 py-2 ${
-                        selectedCategory === category
-                          ? "bg-purple-500 text-white"
-                          : "text-gray-800 hover:bg-purple-500 hover:text-white"
-                      } transition duration-300`}
-                    >
-                      {category}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-          <div className="relative w-full">
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700 font-bold">Sort by:</span>
-              <button
-                onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
-                className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-semibold px-4 py-2 rounded-full w-full text-left flex justify-between items-center shadow-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-300"
-              >
-                {sortOptions.find((option) => option.value === sort)?.label}{" "}
-                <svg
-                  className={`w-5 h-5 transform transition-transform ${
-                    isSortDropdownOpen ? "rotate-180" : "rotate-0"
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  ></path>
-                </svg>
-              </button>
-            </div>
-            {isSortDropdownOpen && (
-              <div className="absolute z-10 w-full mt-2 bg-white rounded-md shadow-lg border border-gray-300">
-                <ul className="py-2">
-                  {sortOptions.map((option) => (
-                    <li
-                      key={option.value}
-                      onClick={() => handleSortChange(option.value)}
-                      className={`cursor-pointer px-4 py-2 ${
-                        sort === option.value
-                          ? "bg-purple-500 text-white"
-                          : "text-gray-800 hover:bg-purple-500 hover:text-white"
-                      } transition duration-300`}
-                    >
-                      {option.label}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-          <form
-            onSubmit={handleSearchSubmit}
-            className="relative w-full md:w-1/2"
-          >
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className="w-full border border-gray-300 rounded-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-md"
-              placeholder="Search..."
-            />
-            <button
-              type="submit"
-              className="absolute inset-y-0 right-0 px-6 py-2 bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-300"
-            >
-              <FaSearch />
-            </button>
-          </form>
+    <section
+      id="latest-posts"
+      ref={postListRef}
+      className="py-12 px-4 sm:px-6 lg:px-8 bg-white"
+    >
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-800 to-purple-600 bg-clip-text text-transparent mb-4">
+            Latest Articles
+          </h2>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            Discover insightful content from our community of technology experts
+            and enthusiasts
+          </p>
         </div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        {/* Filters and Search */}
+        <div className="mb-12">
+          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between p-6 bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl border border-gray-200/60">
+            <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+              {/* Category Filter */}
+              <div className="relative flex-1 lg:flex-none">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Category
+                </label>
+                <div className="relative">
+                  <button
+                    onClick={() =>
+                      setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
+                    }
+                    className="w-full lg:w-64 flex items-center justify-between px-4 py-3 bg-white border border-gray-300 rounded-xl text-left shadow-sm hover:border-gray-400 transition-colors duration-200"
+                  >
+                    <span className="text-gray-700">{selectedCategory}</span>
+                    <FaFilter className="w-4 h-4 text-gray-400" />
+                  </button>
+
+                  {isCategoryDropdownOpen && (
+                    <div className="absolute z-10 w-full mt-2 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                      <div className="max-h-60 overflow-y-auto py-2">
+                        {categories.map((category) => (
+                          <button
+                            key={category}
+                            onClick={() => handleCategorySelect(category)}
+                            className={`w-full px-4 py-3 text-left transition-colors duration-200 ${
+                              selectedCategory === category
+                                ? "bg-purple-50 text-purple-600 font-medium"
+                                : "text-gray-700 hover:bg-gray-50"
+                            }`}
+                          >
+                            {category}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Sort Filter */}
+              <div className="relative flex-1 lg:flex-none">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Sort By
+                </label>
+                <div className="relative">
+                  <button
+                    onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+                    className="w-full lg:w-64 flex items-center justify-between px-4 py-3 bg-white border border-gray-300 rounded-xl text-left shadow-sm hover:border-gray-400 transition-colors duration-200"
+                  >
+                    <span className="text-gray-700">
+                      {sortOptions.find((opt) => opt.value === sort)?.label}
+                    </span>
+                    <svg
+                      className="w-4 h-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {isSortDropdownOpen && (
+                    <div className="absolute z-10 w-full mt-2 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                      {sortOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => handleSortSelect(option.value)}
+                          className={`w-full px-4 py-3 text-left transition-colors duration-200 ${
+                            sort === option.value
+                              ? "bg-purple-50 text-purple-600 font-medium"
+                              : "text-gray-700 hover:bg-gray-50"
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Search */}
+            <div className="w-full lg:w-auto">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Search Articles
+              </label>
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search posts..."
+                  className="w-full lg:w-80 px-4 py-3 pl-11 pr-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                />
+                <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <button
+                  type="submit"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-purple-500 hover:bg-purple-600 text-white px-4 py-1.5 rounded-lg transition-colors duration-200"
+                >
+                  Search
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        {/* Posts Grid */}
         {loading ? (
-          <div className="flex justify-center items-center w-full col-span-3">
-            <ClipLoader color="#9333ea" loading={loading} size={50} />
+          <div className="flex justify-center items-center py-20">
+            <div className="text-center">
+              <ClipLoader color="#9333ea" size={60} />
+              <p className="mt-4 text-gray-600">Loading articles...</p>
+            </div>
           </div>
         ) : posts.length === 0 ? (
-          <div className="flex justify-center items-center w-full col-span-3">
-            <p className="text-gray-500">No posts found.</p>
+          <div className="text-center py-20">
+            <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+              <FaSearch className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No articles found
+            </h3>
+            <p className="text-gray-600 max-w-md mx-auto">
+              {searchQuery || selectedCategory !== "All"
+                ? "Try adjusting your search or filter criteria"
+                : "Be the first to create a post in our community"}
+            </p>
           </div>
         ) : (
-          posts.map((post) => <PostCard key={post._id} post={post} />)
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {posts.map((post) => (
+                <PostCard key={post._id} post={post} />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-gray-200">
+                <div className="text-sm text-gray-600">
+                  Page {currentPage} of {totalPages}
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                  >
+                    <FaChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex space-x-1">{renderPageNumbers()}</div>
+
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                  >
+                    <FaChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
-      <div className="mt-8 flex justify-center items-center space-x-4">
-        <button
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          className="bg-white border border-purple-500 text-purple-500 py-2 px-4 rounded-full shadow-md hover:bg-purple-500 hover:text-white transition duration-300"
-        >
-          <FaChevronLeft />
-        </button>
-        <div className="flex space-x-2">{renderPageNumbers()}</div>
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-          className="bg-white border border-purple-500 text-purple-500 py-2 px-4 rounded-full shadow-md hover:bg-purple-500 hover:text-white transition duration-300"
-        >
-          <FaChevronRight />
-        </button>
-      </div>
-    </div>
+    </section>
   );
 };
 
