@@ -1,111 +1,156 @@
-const Rating = require('../models/ratingModel')
-const asyncWrapper = require('../utils/asyncWrapper')
-const AppError = require('../utils/appError')
-const Post = require('../models/postModel')
-const APIFeatures = require('../utils/APIFeatures')
+const Rating = require("../models/ratingModel");
+const asyncWrapper = require("../utils/asyncWrapper");
+const AppError = require("../utils/appError");
+const Post = require("../models/postModel");
+const APIFeatures = require("../utils/APIFeatures");
 
-exports.addRating = asyncWrapper(async (req, res, next) => {
-  if (!req.body.post) req.body.post = req.body.postId
-  if (!req.body.user) req.body.user = req.user.id
+// Helper function to calculate average ratings
+const calculatePostRatings = async (postId) => {
+  const ratings = await Rating.find({ post: postId });
 
-  const post = await Post.findById(req.body.post)
-
-  if (req.user.id === String(post?.user)) {
-    return next(new AppError("you can't rate your post", 404))
+  if (ratings.length === 0) {
+    return { averageRating: 0, ratingQuantity: 0 };
   }
 
-  const rating = await Rating.create(req.body)
+  const totalRating = ratings.reduce((sum, rating) => sum + rating.rating, 0);
+  const averageRating = totalRating / ratings.length;
+
+  return {
+    averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
+    ratingQuantity: ratings.length,
+  };
+};
+
+exports.addRating = asyncWrapper(async (req, res, next) => {
+  if (!req.body.post) req.body.post = req.body.postId;
+  if (!req.body.user) req.body.user = req.user.id;
+
+  const post = await Post.findById(req.body.post);
+
+  if (!post) {
+    return next(new AppError("Post not found", 404));
+  }
+
+  // Check if user is trying to rate their own post
+  if (String(post.user) === String(req.user.id)) {
+    return next(new AppError("You can't rate your own post", 400));
+  }
+
+  // Check if user already rated this post
+  const existingRating = await Rating.findOne({
+    post: req.body.post,
+    user: req.user.id,
+  });
+
+  if (existingRating) {
+    return next(new AppError("You have already rated this post", 400));
+  }
+
+  const rating = await Rating.create(req.body);
+
+  // Update post ratings
+  const newRatings = await calculatePostRatings(req.body.post);
+  await Post.findByIdAndUpdate(req.body.post, newRatings);
+
   res.status(200).json({
-    status: 'Success',
+    status: "Success",
     data: {
       data: rating,
     },
-  })
-})
+  });
+});
 
 exports.deleteRating = asyncWrapper(async (req, res, next) => {
-  const rate = await Rating.findByIdAndDelete(req.params.id)
+  const rating = await Rating.findById(req.params.id);
 
-  if (!rate) {
-    return next(new AppError('No document found with that ID', 404))
+  if (!rating) {
+    return next(new AppError("No rating found with that ID", 404));
   }
 
-  if (req.user.id != String(rate?.user)) {
-    return next(
-      new AppError(
-        'You cannot delete these rating because it is not yours',
-        404
-      )
-    )
+  // Check if user owns the rating
+  if (String(rating.user) !== String(req.user.id)) {
+    return next(new AppError("You can only delete your own ratings", 403));
   }
+
+  await Rating.findByIdAndDelete(req.params.id);
+
+  // Update post ratings
+  const newRatings = await calculatePostRatings(rating.post);
+  await Post.findByIdAndUpdate(rating.post, newRatings);
 
   res.status(204).json({
-    status: 'success',
+    status: "success",
     data: null,
-  })
-})
+  });
+});
 
 exports.updateRating = asyncWrapper(async (req, res, next) => {
-  const rate = await Rating.findById(req.params.id)
-  if (!req.body.user) req.body.user = req.user.id
+  const rating = await Rating.findById(req.params.id);
 
-  if (req.user.id != String(rate?.user)) {
-    return next(
-      new AppError(
-        'You cannot update these rating because it is not yours',
-        404
-      )
-    )
+  if (!rating) {
+    return next(new AppError("No rating found with that ID", 404));
   }
 
-  const updatedrating = await Rating.findByIdAndUpdate(
+  // Check if user owns the rating
+  if (String(rating.user) !== String(req.user.id)) {
+    return next(new AppError("You can only update your own ratings", 403));
+  }
+
+  const updatedRating = await Rating.findByIdAndUpdate(
     req.params.id,
-    req.body,
+    { rating: req.body.rating },
     {
       new: true,
       runValidators: true,
     }
-  )
-  if (!updatedrating) {
-    return next(new AppError('No rating found with that ID', 404))
-  }
+  );
 
-  if (req.user.id != String(rate?.user)) {
-    return next(
-      new AppError(
-        'You cannot delete these rating because it is not yours',
-        404
-      )
-    )
-  }
+  // Update post ratings
+  const newRatings = await calculatePostRatings(rating.post);
+  await Post.findByIdAndUpdate(rating.post, newRatings);
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
-      updatedrating,
+      data: updatedRating, // Fixed: return as 'data' to match frontend expectation
     },
-  })
-})
+  });
+});
 
 exports.getAllRating = asyncWrapper(async (req, res, next) => {
-  let filter = {}
-  if (req.params.postId) filter = { post: req.params.postId }
+  let filter = {};
+  if (req.params.postId) filter = { post: req.params.postId };
 
   const features = new APIFeatures(Rating.find(filter), req.query)
     .filter()
     .sort()
     .limit()
-    .paginate()
+    .paginate();
 
-  const reviews = await features.query
-    .populate({ path: 'post', select: 'author' })
-    .populate({ path: 'user', select: 'name' })
+  const ratings = await features.query
+    .populate({ path: "post", select: "user" })
+    .populate({ path: "user", select: "name" });
 
   res.status(200).json({
-    status: 'success',
-    result: reviews.length,
+    status: "success",
+    result: ratings.length,
     data: {
-      data: reviews,
+      data: ratings,
     },
-  })
-})
+  });
+});
+
+// Get user's rating for a specific post
+exports.getUserRating = asyncWrapper(async (req, res, next) => {
+  const rating = await Rating.findOne({
+    post: req.params.postId,
+    user: req.user.id,
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      data: rating,
+    },
+  });
+});

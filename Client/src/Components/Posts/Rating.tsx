@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import api from "../../axiosConfig";
 
 interface RatingProps {
   postId: string | undefined;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: any;
 }
 
@@ -43,20 +44,22 @@ const Rating: React.FC<RatingProps> = ({ postId, user }) => {
 
         setAverageRating(post.averageRating || 0);
         setRatingQuantity(post.ratingQuantity || 0);
-        setIsAuthor(post.user?._id === user._id);
+        setIsAuthor(String(post.user?._id) === String(user._id));
 
-        // Fetch user's specific rating
-        const ratingsResponse = await api.get(`/rating/${postId}`);
-        const allRatings: RatingData[] = ratingsResponse.data.data.data;
+        // Fetch user's specific rating using the new endpoint
+        try {
+          const userRatingResponse = await api.get(`/rating/user/${postId}`);
+          const userRatingData = userRatingResponse.data.data.data;
 
-        const userRatingData = allRatings.find(
-          (rating: RatingData) => rating.user._id === user._id
-        );
-
-        if (userRatingData) {
-          setUserRating(userRatingData.rating);
-          setRatingId(userRatingData._id);
-        } else {
+          if (userRatingData) {
+            setUserRating(userRatingData.rating);
+            setRatingId(userRatingData._id);
+          } else {
+            setUserRating(null);
+            setRatingId(null);
+          }
+        } catch (error) {
+          // If no rating found, this is normal
           setUserRating(null);
           setRatingId(null);
         }
@@ -72,46 +75,34 @@ const Rating: React.FC<RatingProps> = ({ postId, user }) => {
 
   const renderStars = (rating: number, interactive: boolean = false) => {
     const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
 
     for (let i = 1; i <= 5; i++) {
-      if (i <= fullStars) {
+      if (interactive) {
+        // Interactive stars for rating modal
         stars.push(
-          <FaStar
+          <button
             key={i}
-            className={`w-6 h-6 ${
-              interactive
-                ? "text-yellow-400 cursor-pointer hover:scale-110 transition-transform duration-200"
-                : "text-yellow-400"
-            }`}
-            onClick={interactive ? () => setSelectedRating(i) : undefined}
-          />
-        );
-      } else if (i === fullStars + 1 && hasHalfStar) {
-        stars.push(
-          <FaStarHalfAlt
-            key={i}
-            className={`w-6 h-6 ${
-              interactive
-                ? "text-yellow-400 cursor-pointer hover:scale-110 transition-transform duration-200"
-                : "text-yellow-400"
-            }`}
-            onClick={interactive ? () => setSelectedRating(i - 0.5) : undefined}
-          />
+            onClick={() => setSelectedRating(i)}
+            className="focus:outline-none"
+          >
+            {i <= selectedRating ? (
+              <FaStar className="w-8 h-8 text-yellow-400 cursor-pointer hover:scale-110 transition-transform duration-200" />
+            ) : (
+              <FaRegStar className="w-8 h-8 text-yellow-400 cursor-pointer hover:scale-110 transition-transform duration-200" />
+            )}
+          </button>
         );
       } else {
-        stars.push(
-          <FaRegStar
-            key={i}
-            className={`w-6 h-6 ${
-              interactive
-                ? "text-yellow-400 cursor-pointer hover:scale-110 transition-transform duration-200"
-                : "text-yellow-400"
-            }`}
-            onClick={interactive ? () => setSelectedRating(i) : undefined}
-          />
-        );
+        // Display stars for showing ratings
+        if (i <= Math.floor(rating)) {
+          stars.push(<FaStar key={i} className="w-6 h-6 text-yellow-400" />);
+        } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
+          stars.push(
+            <FaStarHalfAlt key={i} className="w-6 h-6 text-yellow-400" />
+          );
+        } else {
+          stars.push(<FaRegStar key={i} className="w-6 h-6 text-yellow-400" />);
+        }
       }
     }
     return stars;
@@ -127,7 +118,7 @@ const Rating: React.FC<RatingProps> = ({ postId, user }) => {
   };
 
   const submitRating = async () => {
-    if (!postId || !user?._id) return;
+    if (!postId || !user?._id || selectedRating === 0) return;
 
     try {
       setLoading(true);
@@ -154,10 +145,13 @@ const Rating: React.FC<RatingProps> = ({ postId, user }) => {
       // Refresh post data to get updated averages
       const postResponse = await api.get(`/post/getPost/${postId}`);
       const post = postResponse.data.data.post;
-      setAverageRating(post.averageRating);
-      setRatingQuantity(post.ratingQuantity);
-    } catch (error) {
+      setAverageRating(post.averageRating || 0);
+      setRatingQuantity(post.ratingQuantity || 0);
+    } catch (error: any) {
       console.error("Error submitting rating:", error);
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -172,13 +166,14 @@ const Rating: React.FC<RatingProps> = ({ postId, user }) => {
 
       // Update local state
       setUserRating(null);
+      setRatingId(null);
       setShowDeleteModal(false);
 
       // Refresh post data
       const response = await api.get(`/post/getPost/${postId}`);
       const post = response.data.data.post;
-      setAverageRating(post.averageRating);
-      setRatingQuantity(post.ratingQuantity);
+      setAverageRating(post.averageRating || 0);
+      setRatingQuantity(post.ratingQuantity || 0);
     } catch (error) {
       console.error("Error deleting rating:", error);
     } finally {
@@ -228,7 +223,7 @@ const Rating: React.FC<RatingProps> = ({ postId, user }) => {
         </div>
       </div>
 
-      {/* User Rating Section */}
+      {/* User Rating Section - Only show if user is not the author */}
       {!isAuthor && user?._id && (
         <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -275,6 +270,24 @@ const Rating: React.FC<RatingProps> = ({ postId, user }) => {
         </div>
       )}
 
+      {/* Show message if user is author */}
+      {isAuthor && (
+        <div className="bg-yellow-50 rounded-2xl p-6 border border-yellow-200">
+          <p className="text-yellow-800 text-center">
+            You cannot rate your own post.
+          </p>
+        </div>
+      )}
+
+      {/* Show message if user is not logged in */}
+      {!user?._id && (
+        <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200">
+          <p className="text-blue-800 text-center">
+            Please log in to rate this post.
+          </p>
+        </div>
+      )}
+
       {/* Rating Modal */}
       {showRatingModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 p-4">
@@ -285,7 +298,7 @@ const Rating: React.FC<RatingProps> = ({ postId, user }) => {
             <p className="text-gray-600 mb-6">How would you rate this post?</p>
 
             <div className="flex justify-center mb-6">
-              <div className="flex space-x-1">
+              <div className="flex space-x-2">
                 {renderStars(selectedRating, true)}
               </div>
             </div>
