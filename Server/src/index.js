@@ -21,12 +21,12 @@ app.use(
     origin: [
       "http://localhost:5000",
       "http://localhost:5173",
-      "https://blog-peach-three-24.vercel.app",
+      "https://blog-e0l8.onrender.com",
     ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
     preflightContinue: false,
-  })
+  }),
 );
 
 // Configure Express to serve static files from the 'public' directory
