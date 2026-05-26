@@ -9,17 +9,6 @@ interface RatingProps {
   user: any;
 }
 
-interface RatingData {
-  _id: string;
-  rating: number;
-  user: {
-    _id: string;
-  };
-  post: {
-    _id: string;
-  };
-}
-
 const Rating: React.FC<RatingProps> = ({ postId, user }) => {
   const [userRating, setUserRating] = useState<number | null>(null);
   const [averageRating, setAverageRating] = useState<number>(0);
@@ -90,7 +79,7 @@ const Rating: React.FC<RatingProps> = ({ postId, user }) => {
             ) : (
               <FaRegStar className="w-8 h-8 text-yellow-400 cursor-pointer hover:scale-110 transition-transform duration-200" />
             )}
-          </button>
+          </button>,
         );
       } else {
         // Display stars for showing ratings
@@ -98,7 +87,7 @@ const Rating: React.FC<RatingProps> = ({ postId, user }) => {
           stars.push(<FaStar key={i} className="w-6 h-6 text-yellow-400" />);
         } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
           stars.push(
-            <FaStarHalfAlt key={i} className="w-6 h-6 text-yellow-400" />
+            <FaStarHalfAlt key={i} className="w-6 h-6 text-yellow-400" />,
           );
         } else {
           stars.push(<FaRegStar key={i} className="w-6 h-6 text-yellow-400" />);
@@ -325,8 +314,8 @@ const Rating: React.FC<RatingProps> = ({ postId, user }) => {
                 {loading
                   ? "Saving..."
                   : userRating === null
-                  ? "Submit Rating"
-                  : "Update Rating"}
+                    ? "Submit Rating"
+                    : "Update Rating"}
               </button>
             </div>
           </div>
