@@ -21,7 +21,8 @@ app.use(
     origin: [
       "http://localhost:5000",
       "http://localhost:5173",
-      "https://blog-e0l8.onrender.com",
+      "https://blogsyte.netlify.app",
+      "https://blog-peach-three-24.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
